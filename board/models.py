@@ -1,6 +1,4 @@
-
 from django.db import models
-
 
 # user_id ->user , modifydate추가
 from users.models import User
@@ -23,3 +21,9 @@ class Comment(models.Model):
     voter = models.ManyToManyField(User, related_name='voter_comment')
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_comment')
     modify_date = models.DateTimeField()
+
+
+# 파일테이블 추가 Post테이블을 바라봄
+class Media(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='post_media')
+    file = models.FileField(upload_to='board/')
