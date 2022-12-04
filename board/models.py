@@ -9,6 +9,7 @@ class Post(models.Model):
     subject = models.CharField(max_length=50)
     content = models.TextField()
     create_date = models.DateTimeField()
+    category = models.TextField(default="free_board")
     voter = models.ManyToManyField(User, related_name='voter_post')
     modify_date = models.DateTimeField(null=True, blank=True)
 
