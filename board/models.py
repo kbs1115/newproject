@@ -9,8 +9,9 @@ class Post(models.Model):
     subject = models.CharField(max_length=50)
     content = models.TextField()
     create_date = models.DateTimeField()
+    category = models.TextField(default="free_board")
     voter = models.ManyToManyField(User, related_name='voter_post')
-    modify_date = models.DateTimeField()
+    modify_date = models.DateTimeField(null=True, blank=True)
 
 
 # user_id ->user, voter_id -> voter, post_id->post , modifydate 추가
@@ -20,7 +21,7 @@ class Comment(models.Model):
     create_date = models.DateTimeField
     voter = models.ManyToManyField(User, related_name='voter_comment')
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_comment')
-    modify_date = models.DateTimeField()
+    modify_date = models.DateTimeField(null=True, blank=True)
 
 
 # 파일테이블 추가 Post테이블을 바라봄
