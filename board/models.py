@@ -13,6 +13,7 @@ class Post(models.Model):
     voter = models.ManyToManyField(User, related_name='voter_post')
     modify_date = models.DateTimeField(null=True, blank=True)
     category = models.TextField(null=False, blank=False, default="free_board")
+    # notice, question, free , data 게시판
 
 
 # user_id ->user, voter_id -> voter, post_id->post , modify_date 추가
