@@ -21,4 +21,4 @@ def search_view(request):
         target_list[i] = target_list[i][:5]
 
     context = {'free_list': free_list, 'data_list': data_list, 'question_list': question_list, 'kw': kw}
-    return render(request, 'pybo/search_list.html', context)
+    return render(request, 'board/search_list.html', context)
