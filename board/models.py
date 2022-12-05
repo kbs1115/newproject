@@ -1,9 +1,10 @@
 from django.db import models
 
-# user_id ->user , modifydate추가
+# user_id ->user , modify_date추가
 from users.models import User
 
 
+# 12.4수정) 게시판 종류를 결정하는 카테고리 필드추가
 class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_post')
     subject = models.CharField(max_length=50)
@@ -14,7 +15,7 @@ class Post(models.Model):
     modify_date = models.DateTimeField(null=True, blank=True)
 
 
-# user_id ->user, voter_id -> voter, post_id->post , modifydate 추가
+# user_id ->user, voter_id -> voter, post_id->post , modify_date 추가
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     content = models.TextField()
