@@ -10,10 +10,9 @@ class Post(models.Model):
     subject = models.CharField(max_length=50)
     content = models.TextField()
     create_date = models.DateTimeField()
+    category = models.TextField(default="free_board")
     voter = models.ManyToManyField(User, related_name='voter_post')
     modify_date = models.DateTimeField(null=True, blank=True)
-    category = models.TextField(null=False, blank=False, default="free_board")
-    # notice, question, free , data 게시판
 
 
 # user_id ->user, voter_id -> voter, post_id->post , modify_date 추가
