@@ -26,15 +26,13 @@ def index(request):
                'best_voter': best_voter}
     return render(request, 'index.html', context)
 
+
 def nav_search(request):
     kw = request.GET.get('kw', '')
-    free_list = list()
-    data_list = list()
-    question_list = list()
-    order_category = {1: 'free', 2: 'data', 3: 'question'}
-    target_list = {1: free_list, 2: data_list, 3: question_list}
-    for i in [1, 2, 3]:
-        target_list[i] = Post.objects.filter(category__startswith=order_category[i])
+    order_category = {0: 'free', 1: 'data', 2: 'question'}
+    target_list = [list(), list(), list()]
+    for i in [0, 1, 2]:
+        target_list[i] = Post.objects.filter(category__startswith=order_category[i])  # 문제인 부분!
         target_list[i] = target_list[i].annotate(voter_count=Count('voter')).order_by('-voter_count')
         target_list[i] = target_list[i].filter(
             Q(subject__icontains=kw) |  # 제목 검색
@@ -45,5 +43,5 @@ def nav_search(request):
         ).distinct()
         target_list[i] = target_list[i][:5]
 
-    context = {'free_list': free_list, 'data_list': data_list, 'question_list': question_list, 'kw': kw}
+    context = {'free_list': target_list[0], 'data_list': target_list[1], 'question_list': target_list[2], 'kw': kw}
     return render(request, 'board/search_list.html', context)

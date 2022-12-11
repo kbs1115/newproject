@@ -19,7 +19,7 @@ class Post(models.Model):
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     content = models.TextField()
-    create_date = models.DateTimeField
+    create_date = models.DateTimeField()
     voter = models.ManyToManyField(User, related_name='voter_comment')
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_comment')
     modify_date = models.DateTimeField(null=True, blank=True)
