@@ -28,7 +28,9 @@ def index(request):
 
 def nav_search(request):
     kw = request.GET.get('kw', '')
-    free_list, data_list, question_list = list()
+    free_list = list()
+    data_list = list()
+    question_list = list()
     order_category = {1: 'free', 2: 'data', 3: 'question'}
     target_list = {1: free_list, 2: data_list, 3: question_list}
     for i in [1, 2, 3]:
@@ -38,8 +40,8 @@ def nav_search(request):
             Q(subject__icontains=kw) |  # 제목 검색
             Q(content__icontains=kw) |  # 내용 검색
             Q(comment__content__icontains=kw) |  # 답변 내용 검색
-            Q(author__nickname__icontains=kw) |  # 질문 글쓴이 검색
-            Q(comment__author__nickname__icontains=kw)  # 답변 글쓴이 검색
+            Q(user__nickname__icontains=kw) |  # 질문 글쓴이 검색
+            Q(comment__user__nickname__icontains=kw)  # 답변 글쓴이 검색
         ).distinct()
         target_list[i] = target_list[i][:5]
 

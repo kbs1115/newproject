@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>검색 결과</title>
+</head>
+<body>
+<div class="container">
+    <h2>검색 결과</h2>
+    <div>
+        <ul>
+            <li>
+                <h3>자유 게시판</h3>
+                {% for list in free_list %}
+                <a href="./free_board.html">
+                    <h5>{{ list.subject }}</h5>
+                    <p>{{ list.content }}</p>
+                </a>
+                {% endfor %}
+                <a href="./board_list.html">자유게시판 더보기</a>
+            </li>
+            <li>
+                <h3>질문 게시판</h3>
+                {% for list in question_list %}
+                <a href="./post_detail.html">
+                    <h5>{{ list.subject }}</h5>
+                    <p>{{ list.content }}</p>
+                </a>
+                {% endfor %}
+                <a href="./board_list.html">자유게시판 더보기</a>
+            </li>
+            <li>
+                <h3>자유 게시판</h3>
+                {% for list in free_list %}
+                <a href="./free_board.html">
+                    <h5>{{ list.subject }}</h5>
+                    <p>{{ list.content }}</p>
+                </a>
+                {% endfor %}
+                <a href="./board_list.html">자유게시판 더보기</a>
+            </li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>
