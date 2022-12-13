@@ -81,3 +81,60 @@ class NavSearchViewTest(TestCase):
         self.assertEqual(len(response.context['free_list']), 2)
         self.assertEqual(len(response.context['data_list']), 0)
         self.assertEqual(len(response.context['question_list']), 0)
+
+
+class BoardModelTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        User.objects.create(userid='bruce1115', email='bruce1115@naver.com', nickname='BRUCE')
+        User.objects.create(userid='admin', email='bruce11158@gmail.com', nickname='KBS')
+        Post.objects.create(subject='subject 1', content='data 1', create_date=timezone.now(),
+                            user_id=1, category='free_board')
+        Post.objects.create(subject='subject 22', content='data 22', create_date=timezone.now(),
+                            user_id=1, category='free_board')
+
+    def test_postCreate(self):
+        p = Post.objects.create(subject='subject 2', content='data 2', create_date=timezone.now(),
+                                user_id=1, category='question_board')
+        self.assertEqual(p.subject, 'subject 2')
+        self.assertEqual(p.content, 'data 2')
+        self.assertEqual(p.user_id, 1)
+        self.assertEqual(p.category, 'question_board')
+
+    def test_commentCreate(self):
+        c = Comment.objects.create(content='data 2', create_date=timezone.now(), user_id=1, post_id=1)
+        self.assertEqual(c.content, 'data 2')
+        self.assertEqual(c.user_id, 1)
+        self.assertEqual(c.post_id, 1)
+
+    def test_postModify(self):
+        p = Post.objects.create(subject='subject 2', content='data 2', create_date=timezone.now(),
+                                user_id=1, category='question_board')
+        self.assertEqual(p.subject, 'subject 2')
+        self.assertEqual(p.content, 'data 2')
+        self.assertEqual(p.user_id, 1)
+        self.assertEqual(p.category, 'question_board')
+
+        p.subject = 'aaa'
+        p.content = 'aa'
+        p.user_id = 2
+        p.category = 'data_board'
+
+        self.assertEqual(p.subject, 'aaa')
+        self.assertEqual(p.content, 'aa')
+        self.assertEqual(p.user_id, 2)
+        self.assertEqual(p.category, 'data_board')
+
+    def test_commentModify(self):
+        c = Comment.objects.create(content='data 2', create_date=timezone.now(), user_id=1, post_id=1)
+        self.assertEqual(c.content, 'data 2')
+        self.assertEqual(c.user_id, 1)
+        self.assertEqual(c.post_id, 1)
+
+        c.content = 'aaa'
+        c.user_id = 2
+        c.post_id = 2
+
+        self.assertEqual(c.content, 'aaa')
+        self.assertEqual(c.user_id, 2)
+        self.assertEqual(c.post_id, 2)
