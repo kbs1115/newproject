@@ -55,3 +55,12 @@ class UserModelTest(TestCase):
         self.assertEqual(user.email, 'aaaa@naver.com')
         self.assertTrue(user.check_password('123456'))
         self.assertTrue(user.is_staff)
+
+    def test_userDelete(self):  # 일반 user model이 잘 의도한 대로 만들어졌는지 테스트한다.
+        user1 = User.objects.create_user(userid='kbs1115', nickname='byeongsu', email='absoluteqed@gmail.com',
+                                         password='1234')
+        user2 = User.objects.create_user(userid='kbs111115', nickname='byeongsu2', email='absoluteqed22@gmail.com',
+                                         password='123456')
+        user1.delete()
+        self.assertFalse(User.objects.filter(userid='kbs1115').exists())
+        self.assertTrue(User.objects.filter(nickname='byeongsu2').exists())

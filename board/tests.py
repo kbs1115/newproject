@@ -31,7 +31,7 @@ class NavSearchViewTest(TestCase):
         p2 = Post.objects.create(subject='Second', content='no data', create_date=timezone.now(),
                                  user_id=2, category='free_board')
         p1.voter.add(1, 2)
-        p2.voter.add(1) # 새롭게 만든 Post 객체에 voter를 각각 둘, 하나 추가한다. 이 둘이 순서대로 상단에 노출될 것이다.
+        p2.voter.add(1)  # 새롭게 만든 Post 객체에 voter를 각각 둘, 하나 추가한다. 이 둘이 순서대로 상단에 노출될 것이다.
         response = self.client.get(reverse('board:search'), {'kw': 'data'})
         context = response.context['free_list']
         self.assertEqual(context[0].subject, 'Best')  # 첫 번째 Post가 Best인지 확인
@@ -138,3 +138,15 @@ class BoardModelTest(TestCase):
         self.assertEqual(c.content, 'aaa')
         self.assertEqual(c.user_id, 2)
         self.assertEqual(c.post_id, 2)
+
+    def test_postDelete(self):
+        Post.objects.filter(id=1).delete()
+        self.assertFalse(Post.objects.filter(id=1).exists())
+        self.assertTrue(Post.objects.filter(id=2).exists())
+
+    def test_commentDelete(self):
+        c1 = Comment.objects.create(content='data 2', create_date=timezone.now(), user_id=1, post_id=1)
+        c2 = Comment.objects.create(content='data 3', create_date=timezone.now(), user_id=1, post_id=2)
+        c1.delete()
+        self.assertFalse(Comment.objects.filter(post_id=1).exists())
+        self.assertTrue(Comment.objects.filter(content='data 3').exists())
