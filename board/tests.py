@@ -150,3 +150,19 @@ class BoardModelTest(TestCase):
         c1.delete()
         self.assertFalse(Comment.objects.filter(post_id=1).exists())
         self.assertTrue(Comment.objects.filter(content='data 3').exists())
+
+
+class IndexViewTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        User.objects.create(userid='bruce1115', email='bruce1115@naver.com', nickname='BRUCE')
+        User.objects.create(userid='admin', email='bruce11158@gmail.com', nickname='KBS')
+        Post.objects.create(subject='yahoo', content='1111 cccc', create_date=timezone.now(),
+                            user_id=2, category='free_board')
+        for i in range(200):
+            p = Post(subject='free_board %03d' % i, content='free data',
+                     create_date=timezone.now(), user_id=1, category='free_board')
+            p.save()
+
+    def setUp(self):
+        client = Client()
