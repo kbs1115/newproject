@@ -1,11 +1,13 @@
 from django.test import TestCase
-from users.models import User
+
 from django.utils import timezone
 import datetime
 
+from users.models import User
+
 
 class UserModelTest(TestCase):
-    def test_userCreate(self):# 일반 user model이 잘 의도한 대로 만들어졌는지 테스트한다.
+    def test_userCreate(self):  # 일반 user model이 잘 의도한 대로 만들어졌는지 테스트한다.
         user = User.objects.create_user(userid='kbs1115', nickname='byeongsu', email='absoluteqed@gmail.com'
                                         , password='1234')
         user.save()
@@ -18,9 +20,9 @@ class UserModelTest(TestCase):
         self.assertFalse(user.is_staff)
         self.assertGreater(datetime.timedelta(seconds=1), time_after_create - user.date_joined)
 
-    def test_superuserCreate(self):# superuser model이 잘 의도한 대로 만들어졌는지 테스트한다.
+    def test_superuserCreate(self):  # superuser model이 잘 의도한 대로 만들어졌는지 테스트한다.
         user = User.objects.create_superuser(userid='kbs1115', nickname='byeongsu', email='absoluteqed@gmail.com'
-                                        , password='1234')
+                                             , password='1234')
         user.save()
         time_after_create = timezone.now()
         self.assertEqual(user.userid, 'kbs1115')
@@ -31,7 +33,7 @@ class UserModelTest(TestCase):
         self.assertTrue(user.is_staff)
         self.assertGreater(datetime.timedelta(seconds=1), time_after_create - user.date_joined)
 
-    def test_userUpdate(self):# 일반 user model이 잘 의도한 대로 업데이트되었는지 테스트한다.
+    def test_userUpdate(self):  # 일반 user model이 잘 의도한 대로 업데이트되었는지 테스트한다.
         user = User.objects.create_user(userid='kbs1115', nickname='byeongsu', email='absoluteqed@gmail.com'
                                         , password='1234')
         user.save()
