@@ -1,7 +1,9 @@
 from django.test import TestCase
-from newproject.users.models import User
+
 from django.utils import timezone
 import datetime
+
+from users.models import User
 
 
 class UserModelTest(TestCase):

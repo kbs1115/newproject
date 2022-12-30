@@ -1,7 +1,7 @@
 from django.test import TestCase, Client
 from django.urls import reverse
 from .models import Post, Comment
-from user.models import User
+from users.models import User
 from django.utils import timezone
 
 
@@ -155,14 +155,78 @@ class BoardModelTest(TestCase):
 class IndexViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        User.objects.create(userid='bruce1115', email='bruce1115@naver.com', nickname='BRUCE')
-        User.objects.create(userid='admin', email='bruce11158@gmail.com', nickname='KBS')
-        Post.objects.create(subject='yahoo', content='1111 cccc', create_date=timezone.now(),
-                            user_id=2, category='free_board')
-        for i in range(200):
+        User.objects.create(userid='bruce1115', email='bruce1115@naver.com', nickname='BRUCE')  # id=1
+        User.objects.create(userid='admin', email='bruce11158@gmail.com', nickname='KBS')  # id=2
+        User.objects.create(userid='dbsrbals', email='dbsrbals26@gmail.com', nickname='ygm')  # id=3
+        User.objects.create(userid='dbsrbals1', email='dbsrbals27@gmail.com', nickname='ygm1')  # id=4
+
+        for i in range(100):
+            p = Post(subject='notice_board %03d' % i, content='notice data',
+                     create_date=timezone.now(), user_id=1, category='notice_board')
+            p.save()
+
+        for i in range(100):
+            p = Post(subject='question_korean_board %03d' % i, content='question_korean_data',
+                     create_date=timezone.now(), user_id=2, category='question_korean')
+            p.save()
+
+        for i in range(100):
+            p = Post(subject='question_math_board %03d' % i, content='question_math_data',
+                     create_date=timezone.now(), user_id=2, category='question_math')
+            p.save()
+
+        for i in range(100):
+            p = Post(subject='question_english_board %03d' % i, content='question_english_data',
+                     create_date=timezone.now(), user_id=2, category='question_english')
+            p.save()
+
+        for i in range(100):
+            p = Post(subject='question_etc_board %03d' % i, content='question_etc_data',
+                     create_date=timezone.now(), user_id=2, category='question_etc')
+            p.save()
+
+        for i in range(100):
             p = Post(subject='free_board %03d' % i, content='free data',
                      create_date=timezone.now(), user_id=1, category='free_board')
             p.save()
 
     def setUp(self):
         client = Client()
+
+    def test_voterCountAlign(self):
+        p1 = Post.objects.create(subject='1', content='no data', create_date=timezone.now(),
+                                 user_id=4, category='free_board')
+        p2 = Post.objects.create(subject='cannot in best voter', content='no data', create_date=timezone.now(),
+                                 user_id=1, category='notice_board')
+        p3 = Post.objects.create(subject='2', content='no data', create_date=timezone.now(),
+                                 user_id=2, category='question_korean')
+        p4 = Post.objects.create(subject='3', content='no data', create_date=timezone.now(),
+                                 user_id=3, category='question_math')
+        p1.voter.add(1, 2, 3)
+        p2.voter.add(2, 3, 4)
+        p3.voter.add(1, 4)
+        p4.voter.add(1)
+
+        response = self.client.get(reverse('board:index'))
+        context = response.context['best_voter']
+        self.assertEqual(context[0].subject, '1')
+        self.assertEqual(context[1].subject, '2')
+        self.assertEqual(context[2].subject, '3')
+
+    def test_checkPostCount(self):
+        response = self.client.get(reverse("board:index"))
+        notice = len(response.context['notice_board'])
+        question_korean = len(response.context['question_korean'])
+        question_math = len(response.context['question_math'])
+        question_english = len(response.context['question_english'])
+        question_etc = len(response.context['question_etc'])
+        free_board = len(response.context['free_board'])
+        best_voter = len(response.context['best_voter'])
+
+        self.assertEqual(notice, 10)
+        self.assertEqual(question_korean, 5)
+        self.assertEqual(question_math, 5)
+        self.assertEqual(question_english, 5)
+        self.assertEqual(question_etc, 5)
+        self.assertEqual(free_board, 10)
+        self.assertEqual(best_voter, 10)

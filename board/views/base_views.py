@@ -1,7 +1,9 @@
 from django.db.models import Q, Count
 from django.shortcuts import render
-from board.models import Post
 from users.models import User
+
+from ..models import Post
+
 
 def index(request):
     notice = Post.objects.filter(category='notice_board').order_by('-create_date')
@@ -24,7 +26,7 @@ def index(request):
     context = {'notice_board': notice, 'question_korean': question_korean, 'question_math': question_math,
                'question_english': question_english, 'question_etc': question_etc, 'free_board': free,
                'best_voter': best_voter}
-    return render(request, 'index.html', context)
+    return render(request, 'board/index.html', context)
 
 
 def nav_search(request):
