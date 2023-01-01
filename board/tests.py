@@ -1,7 +1,7 @@
 from django.test import TestCase, Client
 from django.urls import reverse
 from .models import Post, Comment
-from user.models import User
+from users.models import User
 from django.utils import timezone
 
 
