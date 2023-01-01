@@ -3,6 +3,8 @@ from users.models import User
 from django.utils import timezone
 import datetime
 
+from users.models import User
+
 
 class UserModelTest(TestCase):
     def test_userCreate(self):  # 일반 user model이 잘 의도한 대로 만들어졌는지 테스트한다.

@@ -11,10 +11,10 @@ class NavSearchViewTest(TestCase):
         User.objects.create(userid='bruce1115', email='bruce1115@naver.com', nickname='BRUCE')
         User.objects.create(userid='admin', email='bruce11158@gmail.com', nickname='KBS')
         Post.objects.create(subject='yahoo', content='1111 cccc', create_date=timezone.now(),
-                            user_id=2, category='free_board')
+                            user_id=2, category='20')
         for i in range(200):
             p = Post(subject='free_board %03d' % i, content='free data',
-                     create_date=timezone.now(), user_id=1, category='free_board')
+                     create_date=timezone.now(), user_id=1, category='20')
             p.save()
 
     def setUp(self):
@@ -27,9 +27,9 @@ class NavSearchViewTest(TestCase):
 
     def test_voterCountAlign(self):  # 게시글이 voter 수대로 정렬이 잘 되는지 확인하기
         p1 = Post.objects.create(subject='Best', content='no data', create_date=timezone.now(),
-                                 user_id=1, category='free_board')
+                                 user_id=1, category='20')
         p2 = Post.objects.create(subject='Second', content='no data', create_date=timezone.now(),
-                                 user_id=2, category='free_board')
+                                 user_id=2, category='20')
         p1.voter.add(1, 2)
         p2.voter.add(1)  # 새롭게 만든 Post 객체에 voter를 각각 둘, 하나 추가한다. 이 둘이 순서대로 상단에 노출될 것이다.
         response = self.client.get(reverse('board:search'), {'kw': 'data'})
@@ -89,17 +89,17 @@ class BoardModelTest(TestCase):
         User.objects.create(userid='bruce1115', email='bruce1115@naver.com', nickname='BRUCE')
         User.objects.create(userid='admin', email='bruce11158@gmail.com', nickname='KBS')
         Post.objects.create(subject='subject 1', content='data 1', create_date=timezone.now(),
-                            user_id=1, category='free_board')
+                            user_id=1, category='20')
         Post.objects.create(subject='subject 22', content='data 22', create_date=timezone.now(),
-                            user_id=1, category='free_board')
+                            user_id=1, category='20')
 
     def test_postCreate(self):
         p = Post.objects.create(subject='subject 2', content='data 2', create_date=timezone.now(),
-                                user_id=1, category='question_board')
+                                user_id=1, category='10')
         self.assertEqual(p.subject, 'subject 2')
         self.assertEqual(p.content, 'data 2')
         self.assertEqual(p.user_id, 1)
-        self.assertEqual(p.category, 'question_board')
+        self.assertEqual(p.category, '10')
 
     def test_commentCreate(self):
         c = Comment.objects.create(content='data 2', create_date=timezone.now(), user_id=1, post_id=1)
@@ -109,21 +109,21 @@ class BoardModelTest(TestCase):
 
     def test_postModify(self):
         p = Post.objects.create(subject='subject 2', content='data 2', create_date=timezone.now(),
-                                user_id=1, category='question_board')
+                                user_id=1, category='10')
         self.assertEqual(p.subject, 'subject 2')
         self.assertEqual(p.content, 'data 2')
         self.assertEqual(p.user_id, 1)
-        self.assertEqual(p.category, 'question_board')
+        self.assertEqual(p.category, '10')
 
         p.subject = 'aaa'
         p.content = 'aa'
         p.user_id = 2
-        p.category = 'data_board'
+        p.category = '30'
 
         self.assertEqual(p.subject, 'aaa')
         self.assertEqual(p.content, 'aa')
         self.assertEqual(p.user_id, 2)
-        self.assertEqual(p.category, 'data_board')
+        self.assertEqual(p.category, '30')
 
     def test_commentModify(self):
         c = Comment.objects.create(content='data 2', create_date=timezone.now(), user_id=1, post_id=1)
@@ -155,14 +155,78 @@ class BoardModelTest(TestCase):
 class IndexViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        User.objects.create(userid='bruce1115', email='bruce1115@naver.com', nickname='BRUCE')
-        User.objects.create(userid='admin', email='bruce11158@gmail.com', nickname='KBS')
-        Post.objects.create(subject='yahoo', content='1111 cccc', create_date=timezone.now(),
-                            user_id=2, category='free_board')
-        for i in range(200):
+        User.objects.create(userid='bruce1115', email='bruce1115@naver.com', nickname='BRUCE')  # id=1
+        User.objects.create(userid='admin', email='bruce11158@gmail.com', nickname='KBS')  # id=2
+        User.objects.create(userid='dbsrbals', email='dbsrbals26@gmail.com', nickname='ygm')  # id=3
+        User.objects.create(userid='dbsrbals1', email='dbsrbals27@gmail.com', nickname='ygm1')  # id=4
+
+        for i in range(100):
+            p = Post(subject='notice_board %03d' % i, content='notice data',
+                     create_date=timezone.now(), user_id=1, category='40')
+            p.save()
+
+        for i in range(100):
+            p = Post(subject='question_korean_board %03d' % i, content='question_korean_data',
+                     create_date=timezone.now(), user_id=2, category='11')
+            p.save()
+
+        for i in range(100):
+            p = Post(subject='question_math_board %03d' % i, content='question_math_data',
+                     create_date=timezone.now(), user_id=2, category='12')
+            p.save()
+
+        for i in range(100):
+            p = Post(subject='question_english_board %03d' % i, content='question_english_data',
+                     create_date=timezone.now(), user_id=2, category='13')
+            p.save()
+
+        for i in range(100):
+            p = Post(subject='question_etc_board %03d' % i, content='question_etc_data',
+                     create_date=timezone.now(), user_id=2, category='14')
+            p.save()
+
+        for i in range(100):
             p = Post(subject='free_board %03d' % i, content='free data',
-                     create_date=timezone.now(), user_id=1, category='free_board')
+                     create_date=timezone.now(), user_id=1, category='20')
             p.save()
 
     def setUp(self):
         client = Client()
+
+    def test_voterCountAlign(self):
+        p1 = Post.objects.create(subject='1', content='no data', create_date=timezone.now(),
+                                 user_id=4, category='20')
+        p2 = Post.objects.create(subject='cannot in best voter', content='no data', create_date=timezone.now(),
+                                 user_id=1, category='40')
+        p3 = Post.objects.create(subject='2', content='no data', create_date=timezone.now(),
+                                 user_id=2, category='11')
+        p4 = Post.objects.create(subject='3', content='no data', create_date=timezone.now(),
+                                 user_id=3, category='12')
+        p1.voter.add(1, 2, 3)
+        p2.voter.add(2, 3, 4)
+        p3.voter.add(1, 4)
+        p4.voter.add(1)
+
+        response = self.client.get(reverse('board:index'))
+        context = response.context['best_voter']
+        self.assertEqual(context[0].subject, '1')
+        self.assertEqual(context[1].subject, '2')
+        self.assertEqual(context[2].subject, '3')
+
+    def test_checkPostCount(self):
+        response = self.client.get(reverse("board:index"))
+        notice = len(response.context['notice_board'])
+        question_korean = len(response.context['question_korean'])
+        question_math = len(response.context['question_math'])
+        question_english = len(response.context['question_english'])
+        question_etc = len(response.context['question_etc'])
+        free_board = len(response.context['free_board'])
+        best_voter = len(response.context['best_voter'])
+
+        self.assertEqual(notice, 10)
+        self.assertEqual(question_korean, 5)
+        self.assertEqual(question_math, 5)
+        self.assertEqual(question_english, 5)
+        self.assertEqual(question_etc, 5)
+        self.assertEqual(free_board, 10)
+        self.assertEqual(best_voter, 10)

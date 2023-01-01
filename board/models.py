@@ -3,14 +3,33 @@ from django.db import models
 # user_id ->user , modify_date추가
 from users.models import User
 
-
+"""
+1.1수정) category 필드에 들어가는 데이터종류:
+-----------------------
+question_list ->10
+question_korean ->11
+question_math ->12
+question_english ->13
+question_etc ->14
+-----------------------
+free_board ->20
+-----------------------
+data_board -> 30
+data_korean ->31
+data_math ->32
+data_english ->33
+data_etc -> 34
+-----------------------
+notice_board ->40
+-----------------------
+"""
 # 12.4수정) 게시판 종류를 결정하는 카테고리 필드추가
 class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_post')
     subject = models.CharField(max_length=50)
     content = models.TextField()
     create_date = models.DateTimeField()
-    category = models.TextField(default="free_board")
+    category = models.TextField(default='20')
     voter = models.ManyToManyField(User, related_name='voter_post')
     modify_date = models.DateTimeField(null=True, blank=True)
 
