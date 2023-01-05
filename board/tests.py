@@ -74,6 +74,7 @@ class NavSearchViewTest(TestCase):
         self.assertEqual(len(response.context['free_list']), 1)
         self.assertEqual(len(response.context['data_list']), 0)
         self.assertEqual(len(response.context['question_list']), 0)
+        self.assertEqual(response.templates[0].name, 'board/search_list.html')
 
     def test_commentUserData(self):  # nickname KBS로 검색하는 test code
         Comment.objects.create(content='Commenttt', post_id=10, user_id=2, create_date=timezone.now())

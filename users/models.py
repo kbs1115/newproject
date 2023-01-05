@@ -44,7 +44,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     username_validator = UnicodeUsernameValidator()
 
     userid = models.CharField(_("userid"), max_length=20, unique=True, validators=[username_validator])
-    nickname = models.CharField(_("nickname"), max_length=12, unique=True, validators=[username_validator])
+    nickname = models.CharField(_("nickname"), max_length=12, unique=True)
     email = models.EmailField(_("email_address"), unique=True)
     is_staff = models.BooleanField(_("staff status"), default=False)
     is_active = models.BooleanField(_("active"), default=True)
