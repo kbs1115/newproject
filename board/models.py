@@ -4,25 +4,28 @@ from django.db import models
 from users.models import User
 
 """
-1.1수정) category 필드에 들어가는 데이터종류:
+1.1수정) category 필드에 들어가는 데이터종류(단 데이터타입이 String이다):
+또한 category중 일의자리가 0으로 끝나는 데이터는 실제로 존재하지않음. 단순히 views에서 처리하기위함.
 -----------------------
-question_list ->10
-question_korean ->11
-question_math ->12
-question_english ->13
-question_etc ->14
+question_list ->'10'
+question_korean ->'11'
+question_math ->'12'
+question_english ->'13'
+question_etc ->'14'
 -----------------------
-free_board ->20
+free_board ->'20'
 -----------------------
-data_board -> 30
-data_korean ->31
-data_math ->32
-data_english ->33
-data_etc -> 34
+data_board -> '30'
+data_korean ->'31'
+data_math ->'32'
+data_english -> '33'
+data_etc -> '34'
 -----------------------
-notice_board ->40
------------------------
+notice_board ->'40'
+------------------
 """
+
+
 # 12.4수정) 게시판 종류를 결정하는 카테고리 필드추가
 class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_post')
@@ -48,3 +51,9 @@ class Comment(models.Model):
 class Media(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='post_media')
     file = models.FileField(upload_to='board/')
+
+
+class Search(models.Model):
+    content = models.TextField(null=True, blank=True)
+    search_date = models.DateTimeField(null=True, blank=True)
+    user = models.ForeignKey(User, null=True, blank=True, related_name='user_search')

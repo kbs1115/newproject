@@ -47,3 +47,45 @@ def nav_search(request):
 
     context = {'free_list': target_list[0], 'data_list': target_list[1], 'question_list': target_list[2], 'kw': kw}
     return render(request, 'board/search_list.html', context)
+
+
+def posts(request, category: int):
+    if category % 10 == 0:  # question_list , data_board의 전체를 다 가져오고싶을때
+        quotient = category // 10
+        quotient = str(quotient)
+        post = Post.object.filter(category__startswith=quotient)
+    else:
+        category = str(category)
+        post = Post.object.filter(category=category)
+
+    detail = request.GET.get('detail', 'all')  # all , subject ,content, user, subAndContent
+    kw = request.GET.get('kw', '')
+    sort = request.GET.get('sort', '-create_date')  # sort 종류는 -create_date, 추천수 2개가있음
+
+    if detail == 'all':
+        post = post.filter(
+            Q(subject__icontains=kw) |  # 제목 검색
+            Q(content__icontains=kw) |  # 내용 검색
+            Q(comment__content__icontains=kw) |  # 답변 내용 검색
+            Q(user__nickname__icontains=kw) |  # 질문 글쓴이 검색
+            Q(comment__user__nickname__icontains=kw)  # 답변 글쓴이 검색
+        ).distinct()
+    elif detail == 'subject':
+        post = post.filter(Q(subject__icontains=kw))
+    elif detail == 'content':
+        post = post.filter(Q(content__icontains=kw))
+    elif detail == 'user':
+        post = post.filter(Q(user__icontains=kw))
+    elif detail == 'subAndContent':
+        post = post.filter(
+            Q(subject__icontains=kw) |
+            Q(content__icontains=kw)
+        ).distinct()
+
+    if sort == 'voter_count':
+        post = post.annotate(voter_count=Count('voter')).order_by('-voter_count')
+    else:
+        post = post.order_by('-create_date')
+
+    context = {'post': post}
+    return render(request, 'board/posts.html', context)
