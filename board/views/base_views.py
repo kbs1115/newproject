@@ -50,6 +50,7 @@ def nav_search(request):
 
 
 def posts(request, category: int):
+
     if category % 10 == 0:  # question_list , data_board의 전체를 다 가져오고싶을때
         quotient = category // 10
         quotient = str(quotient)
@@ -75,7 +76,7 @@ def posts(request, category: int):
     elif detail == 'content':
         post = post.filter(Q(content__icontains=kw))
     elif detail == 'user':
-        post = post.filter(Q(user__icontains=kw))
+        post = post.filter(Q(user__nickname__icontains=kw))
     elif detail == 'subAndContent':
         post = post.filter(
             Q(subject__icontains=kw) |
