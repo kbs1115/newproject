@@ -230,3 +230,5 @@ class IndexViewTest(TestCase):
         self.assertEqual(question_etc, 5)
         self.assertEqual(free_board, 10)
         self.assertEqual(best_voter, 10)
+
+class PostViewTest(TestCase):

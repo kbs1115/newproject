@@ -53,7 +53,3 @@ class Media(models.Model):
     file = models.FileField(upload_to='board/')
 
 
-class Search(models.Model):
-    content = models.TextField(null=True, blank=True)
-    search_date = models.DateTimeField(null=True, blank=True)
-    user = models.ForeignKey(User, null=True, blank=True, related_name='user_search')
