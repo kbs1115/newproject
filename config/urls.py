@@ -25,6 +25,7 @@ urlpatterns = [
     path('board/', include('board.urls')),
     path('common/', include('common.urls')),
     path('', base_views.index, name='index'),
+    path('accounts/', include('allauth.urls')),
 
 ]
 
