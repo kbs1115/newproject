@@ -1,8 +1,10 @@
+from django.shortcuts import resolve_url
 from django.test import TestCase, Client
 from django.urls import reverse
 from .models import Post, Comment
 from users.models import User
 from django.utils import timezone
+import time
 
 
 class NavSearchViewTest(TestCase):
@@ -74,6 +76,7 @@ class NavSearchViewTest(TestCase):
         self.assertEqual(len(response.context['free_list']), 1)
         self.assertEqual(len(response.context['data_list']), 0)
         self.assertEqual(len(response.context['question_list']), 0)
+        self.assertEqual(response.templates[0].name, 'board/search_list.html')
 
     def test_commentUserData(self):  # nickname KBS로 검색하는 test code
         Comment.objects.create(content='Commenttt', post_id=10, user_id=2, create_date=timezone.now())
@@ -230,3 +233,180 @@ class IndexViewTest(TestCase):
         self.assertEqual(question_etc, 5)
         self.assertEqual(free_board, 10)
         self.assertEqual(best_voter, 10)
+
+
+class PostViewTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        User.objects.create(userid='bruce1115', email='bruce1115@naver.com', nickname='BRUCE')  # id=1
+        User.objects.create(userid='admin', email='bruce11158@gmail.com', nickname='KBS')  # id=2
+        User.objects.create(userid='dbsrbals', email='dbsrbals26@gmail.com', nickname='ygm')  # id=3
+        User.objects.create(userid='dbsrbals1', email='dbsrbals27@gmail.com', nickname='ygm1')  # id=4
+
+        for i in range(40):
+            p = Post(subject='notice_board %03d' % i, content='notice data',
+                     create_date=timezone.now(), user_id=1, category='40')
+            p.save()
+
+        for i in range(10):
+            p = Post(subject='question_list %03d' % i, content='question_list',
+                     create_date=timezone.now(), user_id=2, category='10')
+            p.save()
+
+        for i in range(11):
+            p = Post(subject='question_korean_board %03d' % i, content='question_korean_data',
+                     create_date=timezone.now(), user_id=2, category='11')
+            p.save()
+
+        for i in range(12):
+            p = Post(subject='question_math_board %03d' % i, content='question_math_data',
+                     create_date=timezone.now(), user_id=2, category='12')
+            p.save()
+
+        for i in range(13):
+            p = Post(subject='question_english_board %03d' % i, content='question_english_data',
+                     create_date=timezone.now(), user_id=2, category='13')
+            p.save()
+
+        for i in range(14):
+            p = Post(subject='question_etc_board %03d' % i, content='question_etc_data',
+                     create_date=timezone.now(), user_id=2, category='14')
+            p.save()
+
+        for i in range(20):
+            p = Post(subject='free_board %03d' % i, content='free data',
+                     create_date=timezone.now(), user_id=1, category='20')
+            p.save()
+
+        for i in range(30):
+            p = Post(subject='data_list %03d' % i, content='data_list',
+                     create_date=timezone.now(), user_id=1, category='30')
+            p.save()
+
+        for i in range(31):
+            p = Post(subject='data_list_ko %03d' % i, content='data_list_ko',
+                     create_date=timezone.now(), user_id=1, category='31')
+            p.save()
+
+        for i in range(32):
+            p = Post(subject='data_list_ma %03d' % i, content='data_list_ma',
+                     create_date=timezone.now(), user_id=1, category='32')
+            p.save()
+
+        for i in range(33):
+            p = Post(subject='data_list_eg %03d' % i, content='data_list_eg',
+                     create_date=timezone.now(), user_id=1, category='33')
+            p.save()
+
+        for i in range(34):
+            p = Post(subject='data_list_etc %03d' % i, content='data_list_etc',
+                     create_date=timezone.now(), user_id=1, category='34')
+            p.save()
+
+    def setUp(self) -> None:
+        client = Client()
+
+    def test_checkBoardCategory(self):  # category에 맞게 들어갔는지 확인
+        category_list = [10, 11, 12, 13, 14, 20, 30, 31, 32, 33, 34, 40]
+        for i in category_list:
+            response = self.client.get(reverse("board:posts", args=[i]))
+            category = response.context['category']
+            self.assertEqual(category, i)
+
+    def test_checkBoardCount(self):  # 카테고리에 맞는 post 객체들의 개수를 조사한다
+        category_list = [10, 11, 12, 13, 14, 20, 30, 31, 32, 33, 34, 40]
+        post_count = [60, 11, 12, 13, 14, 20, 160, 31, 32, 33, 34, 40]
+        for i in range(len(category_list)):
+            response = self.client.get(reverse("board:posts", args=[category_list[i]]))
+            post_cnt = len(response.context['post'])
+            self.assertEqual(post_cnt, post_count[i])
+
+    def test_checkDetail(self):  # all , subject ,content, user, subAndContent
+        detail_list = ['', 'all', 'subject', 'content', 'user', 'subAndContent']
+        input_list = ['', 'all', 'subject', 'content', 'user', 'subAndContent']
+        for i in range(len(input_list)):
+            response = self.client.get(reverse("board:posts", args=[40]),
+                                       {'detail': f'{input_list[i]}', 'kw': '', 'sort': '', 'page': '1'},
+                                       )
+            detail = response.context['detail']
+            self.assertEqual(detail, detail_list[i])
+
+    def test_checkKwCount(self):
+        detail_list = ['all', 'subject', 'content', 'user', 'subAndContent']
+        kw_list = ['1', 'ma', 'data']
+        post_cnt_list = [15, 15, 0, 0, 15, 12, 12, 12, 0, 12, 50, 0, 50, 0, 50]
+        k = 0
+        for i in range(len(kw_list)):
+            for j in range(len(detail_list)):
+                response = self.client.get(reverse("board:posts", args=[10]),
+                                           {'detail': f'{detail_list[j]}', 'kw': f'{kw_list[i]}', 'sort': '',
+                                            'page': '1'},
+                                           )
+                post_cnt = len(response.context['post'])
+                self.assertEqual(post_cnt, post_cnt_list[k])
+                k += 1
+
+    def test_pagingDataCount(self):
+        response = self.client.get(reverse("board:posts", args=[10]),
+                                   {'kw': '',
+                                    'page': '2'},
+                                   )
+        page_cnt = len(response.context['page_obj'])
+        self.assertEqual(page_cnt, 30)
+
+        response = self.client.get(reverse("board:posts", args=[10]),
+                                   {'kw': '!@#!@#QESE!@#',
+                                    'page': ''},
+                                   )
+        post_cnt = len(response.context['post'])
+        self.assertEqual(post_cnt, 0)
+
+    def test_checkSort_voter(self):
+
+        p2 = Post.objects.create(subject='4', content='no data', create_date=timezone.now(),
+                                 user_id=1, category='32')
+        p1 = Post.objects.create(subject='1', content='no data', create_date=timezone.now(),
+                                 user_id=4, category='31')
+        p4 = Post.objects.create(subject='3', content='no data', create_date=timezone.now(),
+                                 user_id=3, category='34')
+        p3 = Post.objects.create(subject='2', content='no data', create_date=timezone.now(),
+                                 user_id=2, category='33')
+        p1.voter.add(1, 2, 3)
+        p2.voter.add(2, 3)
+        p3.voter.add(1)
+        p4.voter.add()
+
+        response = self.client.get(reverse("board:posts", args=[30]),
+                                   {'detail': 'content', 'kw': 'no data', 'sort': 'voter_count',
+                                    'page': ''},
+                                   )
+        context = response.context['post']
+        self.assertEqual(context[0].subject, '1')
+        self.assertEqual(context[1].subject, '4')
+        self.assertEqual(context[2].subject, '2')
+        self.assertEqual(context[3].subject, '3')
+
+    def test_checkSort_createdate(self):
+        Post.objects.create(subject='10', content='no data', create_date=timezone.now(),
+                            user_id=4, category='31')
+        time.sleep(0.01)
+        Post.objects.create(subject='20', content='no data', create_date=timezone.now(),
+                            user_id=1, category='32')
+        time.sleep(0.01)
+        Post.objects.create(subject='30', content='no data', create_date=timezone.now(),
+                            user_id=2, category='33')
+        time.sleep(0.01)
+        Post.objects.create(subject='40', content='no data', create_date=timezone.now(),
+                            user_id=3, category='34')
+        time.sleep(0.01)
+        response = self.client.get(reverse("board:posts", args=[30]),
+                                   {'detail': 'content', 'kw': 'no data', 'sort': 'update',
+                                    'page': ''},
+                                   )
+        context = response.context['post']
+        post_cnt = len(response.context['post'])
+        self.assertEqual(post_cnt, 4)
+        self.assertEqual(context[0].subject, '40')
+        self.assertEqual(context[1].subject, '30')
+        self.assertEqual(context[2].subject, '20')
+        self.assertEqual(context[3].subject, '10')

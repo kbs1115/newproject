@@ -16,12 +16,16 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from board.views import base_views
 from django.urls import path, include
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('board/', include('board.urls')),
+    path('common/', include('common.urls')),
+    path('', base_views.index, name='index'),
+    path('accounts/', include('allauth.urls')),
 
 ]
 
