@@ -5,6 +5,9 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth import get_user
 from django.contrib.messages import get_messages
 from common.forms import UserForm
+from board.models import Post, Comment
+from django.utils import timezone
+import time
 
 
 class LogInOutTest(TestCase):
@@ -107,3 +110,38 @@ class SignUpTest(TestCase):
     def test_signUpGet(self):
         response = self.client.get(reverse("common:signup"))
         self.assertTemplateUsed(response, 'common/signup.html')
+
+
+class MyPageTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        hashed_password = make_password('as1df1235')
+        user1 = User.objects.create(userid='bruce1115', email='bruce1115@naver.com',
+                                    password=hashed_password, nickname='BRUCE')
+        for i in range(1, 21):
+            p = Post(subject='free_board %03d' % i, content='free data',
+                     create_date=timezone.now(), user_id=1, category='20')
+            p.save()
+            time.sleep(0.01)
+
+        for i in range(1, 21):
+            c = Comment.objects.create(content='Commenttt %02d' % i, post_id=i, user_id=1, create_date=timezone.now())
+            c.save()
+            time.sleep(0.01)
+
+    def setUp(self):
+        client = Client()
+
+    def test_userData(self):
+        self.client.login(userid="bruce1115", password='as1df1235')
+        response = self.client.get(reverse("common:mypage"))
+        user = get_user(self.client)
+        self.assertEqual(user.userid, "bruce1115")
+        self.assertEqual(user.nickname, "BRUCE")
+        self.assertEqual(user.email, "bruce1115@naver.com")
+        post_list = response.context['post_list']
+        comment_list = response.context['comment_list']
+        self.assertEqual(post_list[0].subject, 'free_board 020')
+        self.assertEqual(len(post_list), 5)
+        self.assertEqual(comment_list[0].content, 'Commenttt 20')
+        self.assertEqual(len(comment_list), 5)
