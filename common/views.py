@@ -56,6 +56,6 @@ def mypage(request):
     return render(request, 'common/mypage.html', context)
 
 
-@login_required(login_url="common:login")
-def mypage_modify(request):
+# @login_required(login_url="common:login")
+# def mypage_modify(request):
 
