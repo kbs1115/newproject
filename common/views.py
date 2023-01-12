@@ -1,11 +1,11 @@
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from common.forms import UserForm
+from common.forms import UserForm, UserUpdateForm
 from board.models import Post, Comment
 from django.core.paginator import Paginator
-from users.models import User
 from django.contrib.auth.decorators import login_required
+from users.models import User
 
 
 def signup(request):
@@ -58,4 +58,17 @@ def mypage(request):
 
 @login_required(login_url="common:login")
 def mypage_modify(request):
+    if request.method == "POST":
+        form = UserUpdateForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect("common:mypage")
+        else:
+            messages.error(request, '유효하지 않은 입력입니다.')
+
+    user = User.objects.get(userid=request.user.userid)
+    form = UserUpdateForm(instance=user)
+    context = {'form': form}
+    return render(request, "common/modify.html", context)
+
 

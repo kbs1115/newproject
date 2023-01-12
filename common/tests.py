@@ -145,3 +145,43 @@ class MyPageTest(TestCase):
         self.assertEqual(len(post_list), 5)
         self.assertEqual(comment_list[0].content, 'Commenttt 20')
         self.assertEqual(len(comment_list), 5)
+
+
+class UpdateTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        hashed_password = make_password('as1df1234')
+        user1 = User.objects.create(userid='bruce1115', email='bruce1115@naver.com',
+                                    password=hashed_password, nickname='BRUCE')
+        user2 = User.objects.create(userid='kbs1115', email='bruce11158@gmail.com',
+                                    password=hashed_password, nickname='KBS')
+
+    def setUp(self):
+        client = Client()
+
+    def test_modifyUser(self):
+        self.client.login(userid="kbs1115", password="as1df1234")
+        response = self.client.post(reverse("common:update"), {"nickname": "KKBBSS", "email": "absoluteqed@gmail.com"})
+        user = User.objects.get(userid="kbs1115")
+        self.assertEqual(user.nickname, "KKBBSS")
+        self.assertEqual(user.email, "absoluteqed@gmail.com")
+        self.assertRedirects(response, reverse("common:mypage"), status_code=302)
+
+    def test_modifyError(self):
+        self.client.login(userid="bruce1115", password="as1df1234")
+        response = self.client.post(reverse("common:update"),
+                                    {"nickname": "KKBBSS", "email": "bruce11158@gmail.com"}) # email 중복
+        messages = list(get_messages(response.wsgi_request))
+        self.assertEqual(str(messages[0]), '유효하지 않은 입력입니다.')
+        form = response.context['form']
+        self.assertEqual(form["nickname"].value(), "BRUCE")
+        self.assertEqual(form["email"].value(), "bruce1115@naver.com")
+        self.assertTemplateUsed(response, "common/modify.html")
+
+    def test_getMethod(self):
+        self.client.login(userid="bruce1115", password="as1df1234")
+        response = self.client.get(reverse("common:update"))
+        form = response.context['form']
+        self.assertEqual(form["nickname"].value(), "BRUCE")
+        self.assertEqual(form["email"].value(), "bruce1115@naver.com")
+        self.assertTemplateUsed(response, "common/modify.html")
