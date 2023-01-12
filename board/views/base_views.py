@@ -1,7 +1,5 @@
 from django.db.models import Q, Count
 from django.shortcuts import render
-from users.models import User
-
 from ..models import Post
 
 
@@ -47,3 +45,6 @@ def nav_search(request):
 
     context = {'free_list': target_list[0], 'data_list': target_list[1], 'question_list': target_list[2], 'kw': kw}
     return render(request, 'board/search_list.html', context)
+
+
+
