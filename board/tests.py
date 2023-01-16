@@ -410,3 +410,16 @@ class PostViewTest(TestCase):
         self.assertEqual(context[1].subject, '30')
         self.assertEqual(context[2].subject, '20')
         self.assertEqual(context[3].subject, '10')
+
+
+class CreatePostTest(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        User.objects.create(userid='bruce1115', email='bruce1115@naver.com', nickname='BRUCE')
+
+    def setUp(self) -> None:
+        client = Client()
+
+    def test_formValid(self):
+        pass
