@@ -7,4 +7,6 @@ urlpatterns = [
     path('search/', base_views.nav_search, name='search'),
     path('posts/<int:category>', post_views.posts, name='posts'),
     path('post/delete/<int:post_id>', post_views.post_delete, name='post_delete'),
+    path('post_create', post_views.post_create, name='post_create'),
 ]
+
