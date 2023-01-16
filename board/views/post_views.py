@@ -1,7 +1,7 @@
 from django.core.paginator import Paginator
 from django.db.models import Count, Q
-from django.shortcuts import render
-
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
 from board.models import Post
 
 
@@ -55,3 +55,12 @@ def posts(request, category: int):
 
 def post_create(request, ):
     pass
+
+
+def post_delete(request, post_id):
+    post = get_object_or_404(Post, pk=post_id)
+    if request.user != post.user:
+        messages.error(request, "게시글 삭제 권한이 없습니다.")
+        # return redirect("board:posts", category=post.category) 여기에 post_detail url로 넘겨 줘야함.
+    post.delete()
+    return redirect("board:posts", category=post.category)

@@ -56,7 +56,6 @@ def mypage(request):
     return render(request, 'common/mypage.html', context)
 
 
-
 @login_required(login_url="common:login")
 def mypage_modify(request):
     if request.method == "POST":
@@ -71,6 +70,3 @@ def mypage_modify(request):
     form = UserUpdateForm(instance=user)
     context = {'form': form}
     return render(request, "common/modify.html", context)
-
-
-
