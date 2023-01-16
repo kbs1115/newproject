@@ -1,8 +1,12 @@
+from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Count, Q
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.utils import timezone
+from django.views import generic
 
-from board.models import Post
+from board.forms import PostForm
+from board.models import Post, Media
 
 
 def posts(request, category: int):
@@ -53,5 +57,35 @@ def posts(request, category: int):
     return render(request, 'board/posts.html', context)
 
 
-def post_create(request, ):
-    pass
+@login_required(login_url="common:login")
+def post_create(request):
+    if request.method == 'POST':
+        form = PostForm(request.POST, request.FILES)
+        # if form.is_valid():
+        post = Post()
+        post.category = request.POST['category']
+        post.subject = request.POST['subject']
+        post.content = request.POST['content']
+        post.user = request.user
+        post.create_date = timezone.now()
+        post.save()
+        files = request.FILES['file']
+        # files = request.FILES.getlist('file_field')
+        for f in files:
+            media = Media()
+            media.post = post
+            media.file = f
+            media.save()
+        return redirect('board:posts', post.category)
+    else:
+        form = PostForm()
+    context = {'form': form}
+    return render(request, 'board/create_post.html', context)
+
+
+class YourFormView(generic.edit.CreateView):
+
+    def post(self, request, *args, **kwargs):
+        form = PostForm(request.POST)
+        for field in form:
+            print("Field Error:", field.name, field.errors)
