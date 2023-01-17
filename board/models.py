@@ -50,6 +50,6 @@ class Comment(models.Model):
 # 파일테이블 추가 Post테이블을 바라봄
 class Media(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='post_media')
-    file = models.FileField(upload_to='board/')
+    file = models.FileField(upload_to='board/', null=True, blank=True)
 
 
