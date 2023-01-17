@@ -57,6 +57,7 @@ def posts(request, category: int):
     return render(request, 'board/posts.html', context)
 
 
+@login_required(login_url="common:login")
 def post_delete(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
     if request.user != post.user:
@@ -64,6 +65,7 @@ def post_delete(request, post_id):
         # return redirect("board:posts", category=post.category) 여기에 post_detail url로 넘겨 줘야함.
     post.delete()
     return redirect("board:posts", category=post.category)
+
 
 @login_required(login_url="common:login")
 def post_create(request):
@@ -77,13 +79,14 @@ def post_create(request):
         post.user = request.user
         post.create_date = timezone.now()
         post.save()
-        files = request.FILES['file']
-        # files = request.FILES.getlist('file_field')
-        for f in files:
-            media = Media()
-            media.post = post
-            media.file = f
-            media.save()
+
+        files = request.FILES.getlist('file_field')
+        if files is not None:
+            for f in files:
+                media = Media()
+                media.post = post
+                media.file = f
+                media.save()
         return redirect('board:posts', post.category)
     else:
         form = PostForm()
