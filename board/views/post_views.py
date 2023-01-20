@@ -69,13 +69,14 @@ def post_create(request):
         post.user = request.user
         post.create_date = timezone.now()
         post.save()
-        files = request.FILES['file']
-        # files = request.FILES.getlist('file_field')
-        for f in files:
-            media = Media()
-            media.post = post
-            media.file = f
-            media.save()
+        # files = request.FILES['file']
+        files = request.FILES.getlist('file_field')
+        if files is not None:
+            for f in files:
+                media = Media()
+                media.post = post
+                media.file = f
+                media.save()
         return redirect('board:posts', post.category)
     else:
         form = PostForm()
@@ -83,9 +84,4 @@ def post_create(request):
     return render(request, 'board/create_post.html', context)
 
 
-class YourFormView(generic.edit.CreateView):
 
-    def post(self, request, *args, **kwargs):
-        form = PostForm(request.POST)
-        for field in form:
-            print("Field Error:", field.name, field.errors)
