@@ -1,10 +1,10 @@
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Count, Q
-from django.shortcuts import render, redirect
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
 from django.utils import timezone
 from django.views import generic
-
 from board.forms import PostForm
 from board.models import Post, Media
 
@@ -58,6 +58,16 @@ def posts(request, category: int):
 
 
 @login_required(login_url="common:login")
+def post_delete(request, post_id):
+    post = get_object_or_404(Post, pk=post_id)
+    if request.user != post.user:
+        messages.error(request, "게시글 삭제 권한이 없습니다.")
+        # return redirect("board:posts", category=post.category) 여기에 post_detail url로 넘겨 줘야함.
+    post.delete()
+    return redirect("board:posts", category=post.category)
+
+
+@login_required(login_url="common:login")
 def post_create(request):
     if request.method == 'POST':
         form = PostForm(request.POST, request.FILES)
@@ -69,7 +79,11 @@ def post_create(request):
         post.user = request.user
         post.create_date = timezone.now()
         post.save()
+<<<<<<< HEAD
         # files = request.FILES['file']
+=======
+
+>>>>>>> fe6d08e440ca0bb3842bd864be3de3604e4af60c
         files = request.FILES.getlist('file_field')
         if files is not None:
             for f in files:
@@ -85,3 +99,11 @@ def post_create(request):
 
 
 
+<<<<<<< HEAD
+=======
+    def post(self, request, *args, **kwargs):
+        form = PostForm(request.POST)
+        for field in form:
+            print("Field Error:", field.name, field.errors)
+
+>>>>>>> fe6d08e440ca0bb3842bd864be3de3604e4af60c
