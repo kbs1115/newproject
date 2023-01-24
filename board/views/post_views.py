@@ -4,7 +4,6 @@ from django.db.models import Count, Q
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.utils import timezone
-from django.views import generic
 from board.forms import PostForm
 from board.models import Post, Media
 
@@ -71,19 +70,15 @@ def post_delete(request, post_id):
 def post_create(request):
     if request.method == 'POST':
         form = PostForm(request.POST, request.FILES)
-        # if form.is_valid():
-        post = Post()
+        if form.is_valid():
+            post = Post()
         post.category = request.POST['category']
         post.subject = request.POST['subject']
         post.content = request.POST['content']
         post.user = request.user
         post.create_date = timezone.now()
         post.save()
-<<<<<<< HEAD
-        # files = request.FILES['file']
-=======
 
->>>>>>> fe6d08e440ca0bb3842bd864be3de3604e4af60c
         files = request.FILES.getlist('file_field')
         if files is not None:
             for f in files:
@@ -98,12 +93,6 @@ def post_create(request):
     return render(request, 'board/create_post.html', context)
 
 
-
-<<<<<<< HEAD
-=======
-    def post(self, request, *args, **kwargs):
-        form = PostForm(request.POST)
-        for field in form:
-            print("Field Error:", field.name, field.errors)
-
->>>>>>> fe6d08e440ca0bb3842bd864be3de3604e4af60c
+def post_detail(request, post_id):
+    pass
+    # 여기서 Commentform을 detail.html에 던져줘야됨.

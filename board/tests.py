@@ -423,3 +423,10 @@ class CreatePostTest(TestCase):
 
     def test_formValid(self):
         pass
+
+
+class CreateCommentTest(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        User.objects.create(userid='bruce1115', email='bruce1115@naver.com', nickname='BRUCE')

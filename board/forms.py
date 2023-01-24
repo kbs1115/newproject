@@ -9,3 +9,8 @@ class PostForm(forms.Form):
     content = forms.CharField()
     # file = forms.FileField(required=False)
     file_field = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False)
+
+
+class CommentForm(forms.Form):
+    content = forms.CharField()
+    file_field = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False)
