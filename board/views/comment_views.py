@@ -19,6 +19,7 @@ def comment_create(request, post_id, parent_comment=None):
             comment.user = request.user
             comment.create_date = timezone.now()
             comment.parent_comment = parent_comment
+            comment.save()
             files = request.FILES.getlist('file_field')
             if files is not None:
                 for f in files:
