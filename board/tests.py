@@ -566,13 +566,13 @@ class ModifyPostTest(TestCase):
         self.assertEqual(post.content, 'data')
         self.assertEqual(post.category, '21')
         self.assertEqual(post.media.get(post_id=1).file.name, 'board/'+ image2.name)
-        self.assertRedirects(response, reverse('board:post_detail', args=[1]),status_code=302)
+        self.assertRedirects(response, reverse('board:post_detail', args=[1]), status_code=302)
 
     def test_postWrongAccess(self):
         image2 = SimpleUploadedFile(name='test_modifyimage2.jpg', content=b'1112', content_type='image/jpeg')
         self.client.login(userid='bruce1115', password='as1df1234')  # 올바른 사용자의 로그인 후 접근
         response = self.client.post(reverse('board:post_modify', args=[1]), {'subject': '', 'content': 'data',
-                                    'category': '21', 'file_field': [image2]})
+                                    'category': '21', 'file_field': [image2]}) # invalid form이 입력될 때의 결과
         form = response.context['form']
         self.assertTemplateUsed(response, 'board/create_post.html')
         self.assertEqual(form['subject'].value(), 'test 1')
