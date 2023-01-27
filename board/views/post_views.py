@@ -6,6 +6,8 @@ from django.contrib import messages
 from django.utils import timezone
 from board.forms import PostForm
 from board.models import Post, Media
+from django.utils.datastructures import MultiValueDict
+
 
 
 def posts(request, category: int):
@@ -56,6 +58,12 @@ def posts(request, category: int):
     return render(request, 'board/posts.html', context)
 
 
+def post_detail(request, post_id):
+    post = get_object_or_404(Post, pk=post_id)
+    context = {'post': post}
+    return render(request, 'board/post_detail.html', context)
+
+
 @login_required(login_url="common:login")
 def post_delete(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
@@ -72,27 +80,55 @@ def post_create(request):
         form = PostForm(request.POST, request.FILES)
         if form.is_valid():
             post = Post()
-        post.category = request.POST['category']
-        post.subject = request.POST['subject']
-        post.content = request.POST['content']
-        post.user = request.user
-        post.create_date = timezone.now()
-        post.save()
-
-        files = request.FILES.getlist('file_field')
-        if files is not None:
-            for f in files:
-                media = Media()
-                media.post = post
-                media.file = f
-                media.save()
-        return redirect('board:posts', post.category)
+            post.category = form.cleaned_data['category']
+            post.subject = form.cleaned_data['subject']
+            post.content = form.cleaned_data['content']
+            post.user = request.user
+            post.create_date = timezone.now()
+            post.save()
+            files = request.FILES.getlist('file_field')
+            if files is not None:
+                for f in files:
+                    media = Media()
+                    media.post = post
+                    media.file = f
+                    media.save()
+            return redirect("board:post_detail", post_id=post.id)
     else:
         form = PostForm()
     context = {'form': form}
     return render(request, 'board/create_post.html', context)
 
+@login_required(login_url="common:login")
+def post_modify(request, post_id):
+    post = get_object_or_404(Post, pk=post_id)
+    if request.user != post.user:
+        messages.error(request, "게시글 수정 권한이 없습니다.")
+        return redirect("board:post_detail", post_id=post.id)
+    images = post.media.all()
+    if request.method == 'POST':
+        form = PostForm(request.POST, request.FILES, instance=post)
+        if form.is_valid():
+            images.delete()
+            post = form.save(commit=False)
+            post.user = request.user
+            post.create_date = timezone.now()
+            post.save() # 기존의 데이터는 modelform을 활용하여 저장한다.
+            files = request.FILES.getlist('file_field')
+            if files is not None:
+                for f in files:
+                    media = Media()
+                    media.post = post
+                    media.file = f
+                    media.save()  # 이미지 파일은 media 객체를 만들어 추가하는 방식으로 저장한다.
+            return redirect("board:post_detail", post_id=post.id)
 
-def post_detail(request, post_id):
-    pass
-    # 여기서 Commentform을 detail.html에 던져줘야됨.
+    post = Post.objects.get(pk=post.id)
+    filelist = list()
+    for med in post.media.all():
+        filelist = filelist + [med.file]
+    form = PostForm(instance=post)
+    form.fields['file_field'].initial = filelist
+    context = {'form': form}
+    return render(request, 'board/create_post.html', context)
+

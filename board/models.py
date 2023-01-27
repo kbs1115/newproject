@@ -28,7 +28,7 @@ notice_board ->'40'
 
 # 12.4수정) 게시판 종류를 결정하는 카테고리 필드추가
 class Post(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_post')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='post')
     subject = models.CharField(max_length=50)
     content = models.TextField()
     create_date = models.DateTimeField()
@@ -44,7 +44,7 @@ class Comment(models.Model):
     content = models.TextField()
     create_date = models.DateTimeField()
     voter = models.ManyToManyField(User, related_name='voter_comment')
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_comment')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comment')
     modify_date = models.DateTimeField(null=True, blank=True)
     parent_comment = models.ForeignKey("self", on_delete=models.CASCADE, related_name='parent_comment_comment',
                                        null=True)
