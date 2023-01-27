@@ -1,0 +1,3 @@
+하나의 문법임/ ModelForm 내에서 meta클래스를 다루는게있음. 고로 class meta를 생성해줘야함.
+'
+form is_valid란:

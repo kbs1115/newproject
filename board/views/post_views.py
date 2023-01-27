@@ -134,10 +134,4 @@ def post_modify(request, post_id):
     context = {'form': form}
     return render(request, 'board/create_post.html', context)
 
-class YourFormView(generic.edit.CreateView):
-
-    def post(self, request, *args, **kwargs):
-        form = PostForm(request.POST)
-        for field in form:
-            print("Field Error:", field.name, field.errors)
 
