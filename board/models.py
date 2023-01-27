@@ -28,7 +28,7 @@ notice_board ->'40'
 
 # 12.4수정) 게시판 종류를 결정하는 카테고리 필드추가
 class Post(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_post')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='post')
     subject = models.CharField(max_length=50)
     content = models.TextField()
     create_date = models.DateTimeField()
@@ -43,13 +43,13 @@ class Comment(models.Model):
     content = models.TextField()
     create_date = models.DateTimeField()
     voter = models.ManyToManyField(User, related_name='voter_comment')
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_comment')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comment')
     modify_date = models.DateTimeField(null=True, blank=True)
 
 
 # 파일테이블 추가 Post테이블을 바라봄
 class Media(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='post_media')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='media')
     file = models.FileField(upload_to='board/', null=True, blank=True)
 
 

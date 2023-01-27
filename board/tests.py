@@ -1,10 +1,14 @@
-from django.shortcuts import resolve_url
+from django.contrib.messages import get_messages
+from django.contrib.auth.hashers import make_password
 from django.test import TestCase, Client
 from django.urls import reverse
 from .models import Post, Comment
 from users.models import User
 from django.utils import timezone
+from django.utils.datastructures import MultiValueDict
 import time
+from .forms import PostForm
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 
 class NavSearchViewTest(TestCase):
@@ -412,14 +416,167 @@ class PostViewTest(TestCase):
         self.assertEqual(context[3].subject, '10')
 
 
-class CreatePostTest(TestCase):
-
+class PostDetailTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        User.objects.create(userid='bruce1115', email='bruce1115@naver.com', nickname='BRUCE')
+        hashed_password = make_password('as1df1234')
+        user1 = User.objects.create(userid='bruce1115', email='bruce1115@naver.com',
+                                    password=hashed_password, nickname='BRUCE')
+        p1 = Post.objects.create(subject='1', content='no data', create_date=timezone.now(),
+                                 user_id=1, category='31')
+
+    def setUp(self):
+        client = Client()
+
+    def test_postDataRight(self):
+        response = self.client.get(reverse('board:post_detail', args=[1]))
+        post = response.context['post']
+        self.assertEqual(post.user.userid, 'bruce1115')  # id가 일치하는지 검증(user 검증)
+        self.assertEqual(post.subject, '1')
+        self.assertEqual(post.content, 'no data')
+        self.assertEqual(post.category, '31')
+
+
+class CreatePostTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        hashed_password = make_password('as1df1234')
+        user1 = User.objects.create(userid='bruce1115', email='bruce1115@naver.com',
+                                    password=hashed_password, nickname='BRUCE')
 
     def setUp(self) -> None:
         client = Client()
 
     def test_formValid(self):
-        pass
+        image1 = SimpleUploadedFile(name='test_image1.jpg', content=b'111', content_type='image/jpeg')
+        image2 = SimpleUploadedFile(name='test_image2.jpg', content=b'12', content_type='image/jpeg')
+
+        form = PostForm(data={'content': '1111', 'subject': 'test', 'category': '20'},
+                        files={'file_field': image1})  # image를 업로드한 경우
+        self.assertTrue(form.is_valid())
+        self.assertEqual(form.cleaned_data['file_field'], image1)
+
+        form = PostForm(data={'content': '1111', 'subject': 'test', 'category': '20'},
+                        files={})  # image가 존재하지 않는 경우
+        self.assertTrue(form.is_valid())
+
+        form = PostForm(data={'content': '1111', 'subject': 'test', 'category': '20'},
+                        files=MultiValueDict({'file_field': [image1, image2]}))  # image가 두개 이상 들어갈 때
+        self.assertTrue(form.is_valid())
+        self.assertEqual(form.cleaned_data['file_field'], image2)
+
+    def test_getAccess(self):
+        response = self.client.get(reverse('board:post_create'))
+        self.assertRedirects(response, reverse("common:login") + '?next=' + reverse("board:post_create"),
+                             status_code=302)  # 로그인이 안 되었을 시 login page로 redirect. ?next=를 써야 함에 유의!
+        self.client.login(userid='bruce1115', password='as1df1234')
+        response = self.client.get(reverse('board:post_create'))
+        self.assertTemplateUsed(response, 'board/create_post.html')  # 로그인이 되었을 시 의도했던 글 작성 템플릿 render
+
+    def test_postAccessValid(self):
+        image1 = SimpleUploadedFile(name='test_image1.jpg', content=b'111', content_type='image/jpeg')
+        image2 = SimpleUploadedFile(name='test_image2.jpg', content=b'12', content_type='image/jpeg')
+
+        self.client.login(userid='bruce1115', password='as1df1234')
+        response = self.client.post(reverse('board:post_create'), {'subject': 'test dat', 'content': '111',
+                                                                   'category': '20', 'file_field': image1})
+        post = Post.objects.get(subject='test dat')  # Queryset으로 만든 게시글 가져 오기
+        self.assertEqual(post.content, '111')
+        self.assertEqual(post.user.id, 1)
+        self.assertEqual(post.category, '20')
+        m = post.media.all()
+        self.assertEqual(len(m), 1)
+
+        response = self.client.post(reverse('board:post_create'), {'subject': 'test dat2', 'content': '111',
+                                                                   'category': '20'})
+        post = Post.objects.get(subject='test dat2')  # 이미지가 없는 게시글 만들기
+        self.assertEqual(post.content, '111')
+        self.assertEqual(post.user.id, 1)
+        self.assertEqual(post.category, '20')
+        m = post.media.all()
+        self.assertEqual(len(m), 0)
+
+        response = self.client.post(reverse('board:post_create'), {'subject': 'test dat3', 'content': '111',
+                                                                   'category': '20', 'file_field': [image1, image2]})
+        post = Post.objects.get(subject='test dat3')  # 이미지가 두 개인 게시글 만들기.(multiple = True 처리)
+        self.assertEqual(post.content, '111')
+        self.assertEqual(post.user.id, 1)
+        self.assertEqual(post.category, '20')
+        m = post.media.all()
+        self.assertEqual(len(m), 2)
+
+        self.assertRedirects(response, reverse('board:post_detail', args=[post.id]))  # 작성한 글 상세 페이지로 이동하는지 체크
+
+    def test_postAccessInValid(self):
+        image1 = SimpleUploadedFile(name='test_image1.jpg', content=b'111', content_type='image/jpeg')
+
+        self.client.login(userid='bruce1115', password='as1df1234')
+        response = self.client.post(reverse('board:post_create'), {'subject': '', 'content': '111',
+                                                                   'category': '20',
+                                                                   'file_field': image1})  # invalid form 입력
+        self.assertEqual(len(Post.objects.all()), 0)  # Post가 저장이 되지 않아야 한다.
+        self.assertTemplateUsed(response, 'board/create_post.html')  # post 작성 템플릿으로 다시 이동
+
+
+class ModifyPostTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        hashed_password = make_password('as1df1234')
+        image1 = SimpleUploadedFile(name='test_modifyimage1.jpg', content=b'111', content_type='image/jpeg')
+        user1 = User.objects.create(userid='bruce1115', email='bruce1115@naver.com',
+                                    password=hashed_password, nickname='BRUCE')
+        user2 = User.objects.create(userid='kbs1115', email='bruce11158@naver.com',
+                                    password=hashed_password, nickname='BRUCE2')
+        p = Post.objects.create(subject='test 1', content='no data', user_id=1, category='20'
+                            , create_date=timezone.now())
+        p.media.create(file=image1)
+
+    def setUp(self) -> None:
+        client = Client()
+
+    def test_wrongLogin(self):
+        response = self.client.get(reverse('board:post_modify', args=[1])) # 로그인하지 않았을 때
+        self.assertRedirects(response, reverse("common:login") + '?next=' + reverse("board:post_modify", args=[1]),
+                             status_code=302)
+
+        self.client.login(userid='kbs1115', password='as1df1234') # 로그인한 사용자가 글 작성자와 다를 때
+        response = self.client.get(reverse('board:post_modify', args=[1]))
+        self.assertRedirects(response, reverse("board:post_detail", args=[1]), status_code=302)
+        messages = list(get_messages(response.wsgi_request))
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(messages[0]), "게시글 수정 권한이 없습니다.")
+
+    def test_getAccess(self):
+        self.client.login(userid='bruce1115', password='as1df1234')  # 올바른 사용자의 로그인 후 접근
+        response = self.client.get(reverse('board:post_modify', args=[1]))
+        form = response.context['form']
+        self.assertTemplateUsed(response, 'board/create_post.html')
+        self.assertEqual(form['subject'].value(), 'test 1')
+        self.assertEqual(form['content'].value(), 'no data')
+        self.assertEqual(form['category'].value(), '20')
+        file_list = form['file_field'].value()
+        self.assertEqual(file_list[0].name, 'board/test_modifyimage1.jpg')
+
+    def test_postRightAccess(self):
+        image2 = SimpleUploadedFile(name='test_modifyimage2.jpg', content=b'1112', content_type='image/jpeg')
+        self.client.login(userid='bruce1115', password='as1df1234')  # 올바른 사용자의 로그인 후 접근
+        response = self.client.post(reverse('board:post_modify', args=[1]), {'subject': 'test 1', 'content': 'data',
+                                    'category': '21', 'file_field': [image2]})
+        post = Post.objects.get(subject='test 1')
+        self.assertEqual(post.content, 'data')
+        self.assertEqual(post.category, '21')
+        self.assertEqual(post.media.get(post_id=1).file.name, 'board/'+ image2.name)
+        self.assertRedirects(response, reverse('board:post_detail', args=[1]), status_code=302)
+
+    def test_postWrongAccess(self):
+        image2 = SimpleUploadedFile(name='test_modifyimage2.jpg', content=b'1112', content_type='image/jpeg')
+        self.client.login(userid='bruce1115', password='as1df1234')  # 올바른 사용자의 로그인 후 접근
+        response = self.client.post(reverse('board:post_modify', args=[1]), {'subject': '', 'content': 'data',
+                                    'category': '21', 'file_field': [image2]}) # invalid form이 입력될 때의 결과
+        form = response.context['form']
+        self.assertTemplateUsed(response, 'board/create_post.html')
+        self.assertEqual(form['subject'].value(), 'test 1')
+        self.assertEqual(form['content'].value(), 'no data')
+        self.assertEqual(form['category'].value(), '20')
+        file_list = form['file_field'].value()
+        self.assertEqual(file_list[0].name, 'board/test_modifyimage1.jpg')
