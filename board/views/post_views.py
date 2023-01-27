@@ -4,7 +4,6 @@ from django.db.models import Count, Q
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.utils import timezone
-from django.views import generic
 from board.forms import PostForm
 from board.models import Post, Media
 from django.utils.datastructures import MultiValueDict
@@ -100,7 +99,6 @@ def post_create(request):
     context = {'form': form}
     return render(request, 'board/create_post.html', context)
 
-
 @login_required(login_url="common:login")
 def post_modify(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
@@ -133,5 +131,4 @@ def post_modify(request, post_id):
     form.fields['file_field'].initial = filelist
     context = {'form': form}
     return render(request, 'board/create_post.html', context)
-
 
