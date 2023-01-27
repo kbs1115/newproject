@@ -10,7 +10,7 @@ urlpatterns = [
     path('post/create/', post_views.post_create, name='post_create'),
     path('post/detail/<int:post_id>/', post_views.post_detail, name='post_detail'),
 
-    path('comment/create/<int:post_id>/<int:parent_comment>/', comment_views.comment_create, name='comment_create'),
+    path('comment/create/<int:post_id>/<int:parent_comment_id>/', comment_views.comment_create, name='comment_create'),
     path('comment/create/<int:post_id>/', comment_views.comment_create, name='comment_create'),
     path('comment/delete/<int:comment_id>/', comment_views.comment_delete, name='comment_delete'),
     # path('comment/modify', comment_views.comment_modify, name='comment_modify')

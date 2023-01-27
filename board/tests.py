@@ -1,7 +1,12 @@
+from django.contrib.auth.hashers import make_password
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.shortcuts import resolve_url
 from django.test import TestCase, Client
 from django.urls import reverse
-from .models import Post, Comment
+from django.utils.datastructures import MultiValueDict
+
+from .forms import CommentForm
+from .models import Post, Comment, Media
 from users.models import User
 from django.utils import timezone
 import time
@@ -429,4 +434,142 @@ class CreateCommentTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        User.objects.create(userid='bruce1115', email='bruce1115@naver.com', nickname='BRUCE')
+        hashed_password = make_password('dbsrbals1')
+        User.objects.create(userid='dbsrbals1', email='dbsrbals27@gmail.com',  # user_id=1
+                            password=hashed_password, nickname='ygm1')
+        hashed_password = make_password('dbsrbals')
+        User.objects.create(userid='dbsrbals', email='dbsrbals26@gmail.com',  # user_id=2
+                            password=hashed_password, nickname='ygm')
+        hashed_password = make_password('as1df1234')
+        User.objects.create(userid='bruce11156', email='bruce1115123@naver.com',  # user_id=3
+                            password=hashed_password, nickname='BRUCE123123')
+
+    def setUp(self) -> None:
+        client = Client()
+
+    def test_formIsvalid(self):
+        file1 = SimpleUploadedFile(name='test_image1.jpg', content=b'1', content_type='image/jpeg')
+        file2 = SimpleUploadedFile(name='test_image2.jpg', content=b'2', content_type='image/jpeg')
+        file3 = SimpleUploadedFile(name='test_image3.jpg', content=b'3', content_type='image/jpeg')
+        form = CommentForm(data={'content': 'comment_content'},
+                           files=MultiValueDict({'file_field': [file1, file2, file3]}))
+        self.assertTrue(form.is_valid())
+
+    def test_checkDataSave(self):
+        file1 = SimpleUploadedFile(name='test_image1.jpg', content=b'1', content_type='image/jpeg')
+        file2 = SimpleUploadedFile(name='test_image2.jpg', content=b'2', content_type='image/jpeg')
+        file3 = SimpleUploadedFile(name='test_image3.jpg', content=b'3', content_type='image/jpeg')
+        Post.objects.create(subject='30', content='no data', create_date=timezone.now(),
+                            user_id=1, category='33')
+        form = CommentForm(data={'content': 'comment_content'},
+                           files=MultiValueDict({'file_field': [file1, file2, file3]}))
+        self.assertTrue(form.is_valid())
+        self.client.login(userid='bruce11156', password='as1df1234')
+        self.assertEqual(Comment.objects.count(), 0)
+        self.client.post(reverse('board:comment_create', args=[1]),
+                         {'content': 'comment_content', 'file_field': [file1, file2, file3]})
+        self.assertEqual(Comment.objects.count(), 1)
+        self.assertEqual(Media.objects.count(), 3)
+        self.client.logout()
+
+    def test_childComment(self):
+        file1 = SimpleUploadedFile(name='test_image1.jpg', content=b'1', content_type='image/jpeg')
+        file2 = SimpleUploadedFile(name='test_image2.jpg', content=b'2', content_type='image/jpeg')
+        file3 = SimpleUploadedFile(name='test_image3.jpg', content=b'3', content_type='image/jpeg')
+        file4 = SimpleUploadedFile(name='test_image4.jpg', content=b'4', content_type='image/jpeg')
+        file5 = SimpleUploadedFile(name='test_image5.jpg', content=b'5', content_type='image/jpeg')
+        file6 = SimpleUploadedFile(name='test_image6.jpg', content=b'6', content_type='image/jpeg')
+        file7 = SimpleUploadedFile(name='test_image7.jpg', content=b'7', content_type='image/jpeg')
+        file8 = SimpleUploadedFile(name='test_image8.jpg', content=b'8', content_type='image/jpeg')
+        Post.objects.create(subject='test_data', content='no data', create_date=timezone.now(),
+                            user_id=1, category='34')
+        self.client.login(userid='dbsrbals1', password='dbsrbals1')  # id=1
+        self.client.post(reverse('board:comment_create', args=[1]),
+                         {'content': 'comment_content', 'file_field': [file1, file2, file3]})
+        self.client.post(reverse('board:comment_create', args=[1, 1]),
+                         {'content': 'child_comment_content1', 'file_field': [file4, file5, file6]})
+        self.assertEqual(Comment.objects.count(), 2)
+        self.assertEqual(Media.objects.count(), 6)
+        self.assertEqual(len(Comment.objects.filter(parent_comment=1)), 1)
+        self.assertEqual(len(Comment.objects.filter(parent_comment=None)), 1)
+        self.client.logout()
+        self.client.login(userid='dbsrbals', password='dbsrbals')  # id=2
+        self.client.post(reverse('board:comment_create', args=[1, 1]),
+                         {'content': 'child_comment_content1', 'file_field': [file7, file8]})
+        self.assertEqual(Comment.objects.count(), 3)
+        self.assertEqual(Media.objects.count(), 8)
+        self.assertEqual(len(Comment.objects.filter(parent_comment=1)), 2)
+        self.assertEqual(len(Comment.objects.filter(parent_comment=None)), 1)
+        self.client.post(reverse('board:comment_create', args=[1]),
+                         {'content': 'child_comment_content1'})
+        self.assertEqual(Comment.objects.count(), 4)
+        self.assertEqual(Media.objects.count(), 8)
+        self.assertEqual(len(Comment.objects.filter(parent_comment=1)), 2)
+        self.assertEqual(len(Comment.objects.filter(parent_comment=None)), 2)
+        self.client.logout()
+
+    def test_DeleteCommentByDeletePost(self):
+        file1 = SimpleUploadedFile(name='test_image1.jpg', content=b'1', content_type='image/jpeg')
+        file2 = SimpleUploadedFile(name='test_image2.jpg', content=b'2', content_type='image/jpeg')
+        file3 = SimpleUploadedFile(name='test_image3.jpg', content=b'3', content_type='image/jpeg')
+        file4 = SimpleUploadedFile(name='test_image4.jpg', content=b'4', content_type='image/jpeg')
+        Post.objects.create(subject='test_data', content='no data', create_date=timezone.now(),
+                            user_id=1, category='34')
+        self.client.login(userid='dbsrbals1', password='dbsrbals1')  # id=1
+        self.client.post(reverse('board:comment_create', args=[1]),
+                         {'content': 'comment_content', 'file_field': [file1, file2]})
+        self.client.post(reverse('board:comment_create', args=[1, 1]),
+                         {'content': 'child_comment_content1', 'file_field': [file3, file4]})
+        self.client.logout()
+        self.client.login(userid='dbsrbals', password='dbsrbals')  # id=2
+        self.client.post(reverse('board:comment_create', args=[1, 1]),
+                         {'content': 'child_comment_content1'})
+        self.assertEqual(Comment.objects.count(), 3)
+        self.assertEqual(Media.objects.count(), 4)
+        self.assertEqual(len(Comment.objects.filter(parent_comment=1)), 2)
+        self.assertEqual(len(Comment.objects.filter(parent_comment=None)), 1)
+        self.client.logout()
+
+        self.client.login(userid='dbsrbals1', password='dbsrbals1')  # id=1
+        Post.objects.filter(id=1).delete()
+        self.assertEqual(Comment.objects.count(), 0)
+        self.assertEqual(Media.objects.count(), 0)
+        self.assertEqual(len(Comment.objects.filter(parent_comment=1)), 0)
+        self.assertEqual(len(Comment.objects.filter(parent_comment=None)), 0)
+        self.client.logout()
+
+    def test_commentDelete(self):
+        file1 = SimpleUploadedFile(name='test_image1.jpg', content=b'1', content_type='image/jpeg')
+        file2 = SimpleUploadedFile(name='test_image2.jpg', content=b'2', content_type='image/jpeg')
+        file3 = SimpleUploadedFile(name='test_image3.jpg', content=b'3', content_type='image/jpeg')
+        file4 = SimpleUploadedFile(name='test_image4.jpg', content=b'4', content_type='image/jpeg')
+        file5 = SimpleUploadedFile(name='test_image5.jpg', content=b'5', content_type='image/jpeg')
+        file6 = SimpleUploadedFile(name='test_image6.jpg', content=b'6', content_type='image/jpeg')
+
+        Post.objects.create(subject='test_data', content='no data', create_date=timezone.now(),
+                            user_id=1, category='34')
+        self.client.login(userid='dbsrbals1', password='dbsrbals1')  # id=1
+        self.client.post(reverse('board:comment_create', args=[1]),
+                         {'content': 'comment_content', 'file_field': [file1, file2]})
+        self.client.post(reverse('board:comment_create', args=[1, 1]),
+                         {'content': 'child_comment_content1', 'file_field': [file3, file4]})
+        self.client.logout()
+        self.client.login(userid='dbsrbals', password='dbsrbals')  # id=2
+        self.client.post(reverse('board:comment_create', args=[1, 1]),
+                         {'content': 'child_comment_content2'})
+        self.client.post(reverse('board:comment_create', args=[1]),
+                         {'content': 'child_comment_content3', 'file_field': [file5, file6]})
+        self.assertEqual(Comment.objects.count(), 4)
+        self.assertEqual(Media.objects.count(), 6)
+        self.assertEqual(len(Comment.objects.filter(parent_comment=1)), 2)
+        self.assertEqual(len(Comment.objects.filter(parent_comment=None)), 2)
+        self.client.logout()
+
+        self.client.login(userid='dbsrbals1', password='dbsrbals1')  # id=1
+        Comment.objects.filter(content='comment_content').delete()
+        self.assertEqual(Comment.objects.count(), 1)
+        self.assertEqual(Media.objects.count(), 2)
+        self.assertEqual(len(Comment.objects.filter(parent_comment=1)), 0)
+        self.assertEqual(len(Comment.objects.filter(parent_comment=None)), 1)
+
+

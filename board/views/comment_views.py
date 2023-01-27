@@ -1,24 +1,26 @@
-from datetime import timezone
+import datetime
 
 from django.contrib.auth.decorators import login_required
 from django.core.checks import messages
 from django.shortcuts import render, redirect, get_object_or_404
+from django.utils import timezone
 
 from ..forms import CommentForm
 from ..models import Post, Comment, Media
 
 
 @login_required(login_url="common:login")
-def comment_create(request, post_id, parent_comment=None):
+def comment_create(request, post_id, parent_comment_id=None):
     if request.method == 'POST':
         form = CommentForm(request.POST, request.FILES)
-        if form.is_valid:
+        if form.is_valid():
             comment = Comment()
-            comment.post = get_object_or_404(Post, pk=post_id)
-            comment.content = request.POST['content']
+            comment.post = get_object_or_404(Post, id=post_id)
+            comment.content = form.cleaned_data['content']
             comment.user = request.user
             comment.create_date = timezone.now()
-            comment.parent_comment = parent_comment
+            if parent_comment_id is not None:
+                comment.parent_comment = Comment.objects.get(id=parent_comment_id)
             comment.save()
             files = request.FILES.getlist('file_field')
             if files is not None:

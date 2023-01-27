@@ -105,7 +105,7 @@ class SignUpTest(TestCase):
         response = self.client.post(reverse("common:signup"), {"userid": "kbs1115", "nickname": "KBS",
                                                                "password1": "bb11122cc", "password2": "bb1122cc",
                                                                "email": "bruce11158@gmail.com"})
-        self.assertTemplateUsed(response, 'common/signup.html') # 만약 로그인이 안 되는 조건인 경우에는 다시 signup으로 render
+        self.assertTemplateUsed(response, 'common/signup.html')  # 만약 로그인이 안 되는 조건인 경우에는 다시 signup으로 render
 
     def test_signUpGet(self):
         response = self.client.get(reverse("common:signup"))
@@ -170,7 +170,7 @@ class UpdateTest(TestCase):
     def test_modifyError(self):
         self.client.login(userid="bruce1115", password="as1df1234")
         response = self.client.post(reverse("common:update"),
-                                    {"nickname": "KKBBSS", "email": "bruce11158@gmail.com"}) # email 중복
+                                    {"nickname": "KKBBSS", "email": "bruce11158@gmail.com"})  # email 중복
         messages = list(get_messages(response.wsgi_request))
         self.assertEqual(str(messages[0]), '유효하지 않은 입력입니다.')
         form = response.context['form']
