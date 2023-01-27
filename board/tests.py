@@ -491,7 +491,7 @@ class CreatePostTest(TestCase):
         self.assertEqual(post.content, '111')
         self.assertEqual(post.user.id, 1)
         self.assertEqual(post.category, '20')
-        m = post.media.all()
+        m = post.post_media.all()
         self.assertEqual(len(m), 1)
 
         response = self.client.post(reverse('board:post_create'), {'subject': 'test dat2', 'content': '111',
@@ -500,7 +500,7 @@ class CreatePostTest(TestCase):
         self.assertEqual(post.content, '111')
         self.assertEqual(post.user.id, 1)
         self.assertEqual(post.category, '20')
-        m = post.media.all()
+        m = post.post_media.all()
         self.assertEqual(len(m), 0)
 
         response = self.client.post(reverse('board:post_create'), {'subject': 'test dat3', 'content': '111',
@@ -509,7 +509,7 @@ class CreatePostTest(TestCase):
         self.assertEqual(post.content, '111')
         self.assertEqual(post.user.id, 1)
         self.assertEqual(post.category, '20')
-        m = post.media.all()
+        m = post.post_media.all()
         self.assertEqual(len(m), 2)
 
         self.assertRedirects(response, reverse('board:post_detail', args=[post.id]))  # 작성한 글 상세 페이지로 이동하는지 체크
@@ -536,7 +536,7 @@ class ModifyPostTest(TestCase):
                                     password=hashed_password, nickname='BRUCE2')
         p = Post.objects.create(subject='test 1', content='no data', user_id=1, category='20'
                             , create_date=timezone.now())
-        p.media.create(file=image1)
+        p.post_media.create(file=image1)
 
     def setUp(self) -> None:
         client = Client()
@@ -572,7 +572,7 @@ class ModifyPostTest(TestCase):
         post = Post.objects.get(subject='test 1')
         self.assertEqual(post.content, 'data')
         self.assertEqual(post.category, '21')
-        self.assertEqual(post.media.get(post_id=1).file.name, 'board/'+ image2.name)
+        self.assertEqual(post.post_media.get(post_id=1).file.name, 'board/'+ image2.name)
         self.assertRedirects(response, reverse('board:post_detail', args=[1]), status_code=302)
 
     def test_postWrongAccess(self):
@@ -587,8 +587,9 @@ class ModifyPostTest(TestCase):
         self.assertEqual(form['category'].value(), '20')
         file_list = form['file_field'].value()
         self.assertEqual(file_list[0].name, 'board/test_modifyimage1.jpg')
-        
- class CreateCommentTest(TestCase):
+
+
+class CreateCommentTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
