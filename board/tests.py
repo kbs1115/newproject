@@ -1,4 +1,3 @@
-
 from django.contrib.auth.hashers import make_password
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.shortcuts import resolve_url
@@ -535,18 +534,18 @@ class ModifyPostTest(TestCase):
         user2 = User.objects.create(userid='kbs1115', email='bruce11158@naver.com',
                                     password=hashed_password, nickname='BRUCE2')
         p = Post.objects.create(subject='test 1', content='no data', user_id=1, category='20'
-                            , create_date=timezone.now())
+                                , create_date=timezone.now())
         p.media.create(file=image1)
 
     def setUp(self) -> None:
         client = Client()
 
     def test_wrongLogin(self):
-        response = self.client.get(reverse('board:post_modify', args=[1])) # 로그인하지 않았을 때
+        response = self.client.get(reverse('board:post_modify', args=[1]))  # 로그인하지 않았을 때
         self.assertRedirects(response, reverse("common:login") + '?next=' + reverse("board:post_modify", args=[1]),
                              status_code=302)
 
-        self.client.login(userid='kbs1115', password='as1df1234') # 로그인한 사용자가 글 작성자와 다를 때
+        self.client.login(userid='kbs1115', password='as1df1234')  # 로그인한 사용자가 글 작성자와 다를 때
         response = self.client.get(reverse('board:post_modify', args=[1]))
         self.assertRedirects(response, reverse("board:post_detail", args=[1]), status_code=302)
         messages = list(get_messages(response.wsgi_request))
@@ -568,18 +567,19 @@ class ModifyPostTest(TestCase):
         image2 = SimpleUploadedFile(name='test_modifyimage2.jpg', content=b'1112', content_type='image/jpeg')
         self.client.login(userid='bruce1115', password='as1df1234')  # 올바른 사용자의 로그인 후 접근
         response = self.client.post(reverse('board:post_modify', args=[1]), {'subject': 'test 1', 'content': 'data',
-                                    'category': '21', 'file_field': [image2]})
+                                                                             'category': '21', 'file_field': [image2]})
         post = Post.objects.get(subject='test 1')
         self.assertEqual(post.content, 'data')
         self.assertEqual(post.category, '21')
-        self.assertEqual(post.media.get(post_id=1).file.name, 'board/'+ image2.name)
+        self.assertEqual(post.media.get(post_id=1).file.name, 'board/' + image2.name)
         self.assertRedirects(response, reverse('board:post_detail', args=[1]), status_code=302)
 
     def test_postWrongAccess(self):
         image2 = SimpleUploadedFile(name='test_modifyimage2.jpg', content=b'1112', content_type='image/jpeg')
         self.client.login(userid='bruce1115', password='as1df1234')  # 올바른 사용자의 로그인 후 접근
         response = self.client.post(reverse('board:post_modify', args=[1]), {'subject': '', 'content': 'data',
-                                    'category': '21', 'file_field': [image2]}) # invalid form이 입력될 때의 결과
+                                                                             'category': '21', 'file_field': [
+                image2]})  # invalid form이 입력될 때의 결과
         form = response.context['form']
         self.assertTemplateUsed(response, 'board/create_post.html')
         self.assertEqual(form['subject'].value(), 'test 1')
@@ -587,8 +587,9 @@ class ModifyPostTest(TestCase):
         self.assertEqual(form['category'].value(), '20')
         file_list = form['file_field'].value()
         self.assertEqual(file_list[0].name, 'board/test_modifyimage1.jpg')
-        
- class CreateCommentTest(TestCase):
+
+
+class CreateCommentTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
@@ -729,4 +730,3 @@ class ModifyPostTest(TestCase):
         self.assertEqual(Media.objects.count(), 2)
         self.assertEqual(len(Comment.objects.filter(parent_comment=1)), 0)
         self.assertEqual(len(Comment.objects.filter(parent_comment=None)), 1)
-        
