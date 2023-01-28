@@ -132,3 +132,13 @@ def post_modify(request, post_id):
     context = {'form': form}
     return render(request, 'board/create_post.html', context)
 
+
+@login_required(login_url="common:login")
+def post_vote(request, post_id):
+    post = get_object_or_404(Post, pk=post_id)
+    if request.user == post.user:
+        messages.error(request, '본인이 작성한 글은 추천할 수 없습니다.')
+    else:
+        post.voter.add(request.user)
+    return redirect('board:post_detail', post_id=post.id)
+
