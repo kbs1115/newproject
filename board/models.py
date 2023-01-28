@@ -28,7 +28,7 @@ notice_board ->'40'
 
 # 12.4수정) 게시판 종류를 결정하는 카테고리 필드추가
 class Post(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_post')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='post')
     subject = models.CharField(max_length=50)
     content = models.TextField()
     create_date = models.DateTimeField()
@@ -38,18 +38,20 @@ class Post(models.Model):
 
 
 # user_id ->user, voter_id -> voter, post_id->post , modify_date 추가
+# parent_comment는 대댓글여부를 판단하는 필드이다. 부모댓글이 없는경우 대댓글이 아닌걸로 판단한다.
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     content = models.TextField()
     create_date = models.DateTimeField()
     voter = models.ManyToManyField(User, related_name='voter_comment')
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_comment')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comment')
     modify_date = models.DateTimeField(null=True, blank=True)
+    parent_comment = models.ForeignKey("self", on_delete=models.CASCADE, related_name='parent_comment_comment',
+                                       null=True)
 
 
 # 파일테이블 추가 Post테이블을 바라봄
 class Media(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='post_media')
-    file = models.FileField(upload_to='board/')
-
-
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='post_media', blank=True, null=True)
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='comment_media', blank=True, null=True)
+    file = models.FileField(upload_to='board/', null=True, blank=True)
