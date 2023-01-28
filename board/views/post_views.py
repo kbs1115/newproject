@@ -105,7 +105,7 @@ def post_modify(request, post_id):
     if request.user != post.user:
         messages.error(request, "게시글 수정 권한이 없습니다.")
         return redirect("board:post_detail", post_id=post.id)
-    images = post.media.all()
+    images = post.post_media.all()
     if request.method == 'POST':
         form = PostForm(request.POST, request.FILES, instance=post)
         if form.is_valid():
@@ -125,7 +125,7 @@ def post_modify(request, post_id):
 
     post = Post.objects.get(pk=post.id)
     filelist = list()
-    for med in post.media.all():
+    for med in post.post_media.all():
         filelist = filelist + [med.file]
     form = PostForm(instance=post)
     form.fields['file_field'].initial = filelist
