@@ -36,6 +36,7 @@ class NavSearchViewTest(TestCase):
         response = self.client.get(reverse('board:search'), {'kw': 'test'})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['kw'], 'test')
+        self.client
 
     def test_voterCountAlign(self):  # 게시글이 voter 수대로 정렬이 잘 되는지 확인하기
         p1 = Post.objects.create(subject='Best', content='no data', create_date=timezone.now(),
@@ -534,18 +535,18 @@ class ModifyPostTest(TestCase):
         user2 = User.objects.create(userid='kbs1115', email='bruce11158@naver.com',
                                     password=hashed_password, nickname='BRUCE2')
         p = Post.objects.create(subject='test 1', content='no data', user_id=1, category='20'
-                            , create_date=timezone.now())
+                                , create_date=timezone.now())
         p.post_media.create(file=image1)
 
     def setUp(self) -> None:
         client = Client()
 
     def test_wrongLogin(self):
-        response = self.client.get(reverse('board:post_modify', args=[1])) # 로그인하지 않았을 때
+        response = self.client.get(reverse('board:post_modify', args=[1]))  # 로그인하지 않았을 때
         self.assertRedirects(response, reverse("common:login") + '?next=' + reverse("board:post_modify", args=[1]),
                              status_code=302)
 
-        self.client.login(userid='kbs1115', password='as1df1234') # 로그인한 사용자가 글 작성자와 다를 때
+        self.client.login(userid='kbs1115', password='as1df1234')  # 로그인한 사용자가 글 작성자와 다를 때
         response = self.client.get(reverse('board:post_modify', args=[1]))
         self.assertRedirects(response, reverse("board:post_detail", args=[1]), status_code=302)
         messages = list(get_messages(response.wsgi_request))
@@ -567,18 +568,19 @@ class ModifyPostTest(TestCase):
         image2 = SimpleUploadedFile(name='test_modifyimage2.jpg', content=b'1112', content_type='image/jpeg')
         self.client.login(userid='bruce1115', password='as1df1234')  # 올바른 사용자의 로그인 후 접근
         response = self.client.post(reverse('board:post_modify', args=[1]), {'subject': 'test 1', 'content': 'data',
-                                    'category': '21', 'file_field': [image2]})
+                                                                             'category': '21', 'file_field': [image2]})
         post = Post.objects.get(subject='test 1')
         self.assertEqual(post.content, 'data')
         self.assertEqual(post.category, '21')
-        self.assertEqual(post.post_media.get(post_id=1).file.name, 'board/'+ image2.name)
+        self.assertEqual(post.post_media.get(post_id=1).file.name, 'board/' + image2.name)
         self.assertRedirects(response, reverse('board:post_detail', args=[1]), status_code=302)
 
     def test_postWrongAccess(self):
         image2 = SimpleUploadedFile(name='test_modifyimage2.jpg', content=b'1112', content_type='image/jpeg')
         self.client.login(userid='bruce1115', password='as1df1234')  # 올바른 사용자의 로그인 후 접근
         response = self.client.post(reverse('board:post_modify', args=[1]), {'subject': '', 'content': 'data',
-                                    'category': '21', 'file_field': [image2]}) # invalid form이 입력될 때의 결과
+                                                                             'category': '21', 'file_field': [
+                image2]})  # invalid form이 입력될 때의 결과
         form = response.context['form']
         self.assertTemplateUsed(response, 'board/create_post.html')
         self.assertEqual(form['subject'].value(), 'test 1')
@@ -599,7 +601,8 @@ class CreateCommentTest(TestCase):
         User.objects.create(userid='dbsrbals', email='dbsrbals26@gmail.com',  # user_id=2
                             password=hashed_password, nickname='ygm')
         hashed_password = make_password('as1df1234')
-        User.objects.create(userid='bruce11156', email='bruce1115123@naver.com',  # user_id=3
+        User.objects.create(userid='bruce1'
+                                   '1156', email='bruce1115123@naver.com',  # user_id=3
                             password=hashed_password, nickname='BRUCE123123')
 
     def setUp(self) -> None:
@@ -621,6 +624,7 @@ class CreateCommentTest(TestCase):
                             user_id=1, category='33')
         form = CommentForm(data={'content': 'comment_content'},
                            files=MultiValueDict({'file_field': [file1, file2, file3]}))
+        self.assertTrue(form.is_bound)
         self.assertTrue(form.is_valid())
         self.client.login(userid='bruce11156', password='as1df1234')
         self.assertEqual(Comment.objects.count(), 0)
@@ -711,6 +715,12 @@ class CreateCommentTest(TestCase):
                          {'content': 'comment_content', 'file_field': [file1, file2]})
         self.client.post(reverse('board:comment_create', args=[1, 1]),
                          {'content': 'child_comment_content1', 'file_field': [file3, file4]})
+        comment_obj = Comment.objects.get(id=1)
+        form = CommentForm(instance=comment_obj,
+                           files=MultiValueDict({'file_field': [file1, file2, file3]}))
+        self.assertTrue(form.is_bound)
+        self.assertTrue((form.fields['content']))
+
         self.client.logout()
         self.client.login(userid='dbsrbals', password='dbsrbals')  # id=2
         self.client.post(reverse('board:comment_create', args=[1, 1]),
@@ -729,3 +739,105 @@ class CreateCommentTest(TestCase):
         self.assertEqual(Media.objects.count(), 2)
         self.assertEqual(len(Comment.objects.filter(parent_comment=1)), 0)
         self.assertEqual(len(Comment.objects.filter(parent_comment=None)), 1)
+
+
+class CommentModify(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        hashed_password = make_password('dbsrbals1')
+        User.objects.create(userid='dbsrbals1', email='dbsrbals27@gmail.com',  # user_id=1
+                            password=hashed_password, nickname='ygm1')
+        hashed_password = make_password('dbsrbals')
+        User.objects.create(userid='dbsrbals', email='dbsrbals26@gmail.com',  # user_id=2
+                            password=hashed_password, nickname='ygm')
+        hashed_password = make_password('as1df1234')
+        User.objects.create(userid='bruce1'
+                                   '1156', email='bruce1115123@naver.com',  # user_id=3
+                            password=hashed_password, nickname='BRUCE123123')
+
+    def setUp(self) -> None:
+        client = Client()
+
+    def test_IsFormValid(self):
+        file1 = SimpleUploadedFile(name='test_image1.jpg', content=b'1', content_type='image/jpeg')
+        file2 = SimpleUploadedFile(name='test_image2.jpg', content=b'2', content_type='image/jpeg')
+        file3 = SimpleUploadedFile(name='test_image3.jpg', content=b'3', content_type='image/jpeg')
+        file4 = SimpleUploadedFile(name='test_image4.jpg', content=b'4', content_type='image/jpeg')
+        Post.objects.create(subject='test_data', content='no data', create_date=timezone.now(),
+                            user_id=1, category='34')
+        self.client.login(userid='dbsrbals1', password='dbsrbals1')  # id=1
+        self.client.post(reverse('board:comment_create', args=[1]),  # create parent comment
+                         {'content': 'comment_content_not_modify', 'file_field': [file1, file2]})
+        response = self.client.get((reverse('board:comment_modify', args=[1])))
+        form = response.context['form']
+        self.assertTrue(form['content'].value(), 'comment_content_not_modify')
+        self.assertTrue(form['file_field'].value()[0], 'board/test_image1.jpg')
+
+        first_comment = Comment.objects.get(id=1)
+        form = CommentForm(data={'content': 'comment_content'},
+                           files=MultiValueDict({'file_field': [file3, file1]}),
+                           instance=first_comment)
+        self.assertTrue(form.is_valid())
+        self.assertTrue(form.is_bound)
+
+    def test_modifyParentComment(self):
+        file1 = SimpleUploadedFile(name='test_image1.jpg', content=b'1', content_type='image/jpeg')
+        file2 = SimpleUploadedFile(name='test_image2.jpg', content=b'2', content_type='image/jpeg')
+        file3 = SimpleUploadedFile(name='test_image3.jpg', content=b'3', content_type='image/jpeg')
+        Post.objects.create(subject='test_data', content='no data', create_date=timezone.now(),
+                            user_id=1, category='34')
+        self.client.login(userid='dbsrbals1', password='dbsrbals1')  # id=1
+        self.client.post(reverse('board:comment_create', args=[1]),  # create parent comment
+                         {'content': 'comment_content_not_modify', 'file_field': [file1, file2]})
+        self.client.post((reverse('board:comment_modify', args=[1])),
+                         {'content': 'comment_content_modified', 'file_field': [file3]})
+        self.assertEqual(len(Comment.objects.filter(content='comment_content_modified')), 1)
+        self.assertEqual(len(Comment.objects.filter(content='comment_content__not_modify')), 0)
+        self.assertEqual(Media.objects.count(), 1)
+
+    def test_modifyChildComment(self):
+        file1 = SimpleUploadedFile(name='test_image1.jpg', content=b'1', content_type='image/jpeg')
+        file2 = SimpleUploadedFile(name='test_image2.jpg', content=b'2', content_type='image/jpeg')
+        file3 = SimpleUploadedFile(name='test_image3.jpg', content=b'3', content_type='image/jpeg')
+        file4 = SimpleUploadedFile(name='test_image4.jpg', content=b'4', content_type='image/jpeg')
+        file5 = SimpleUploadedFile(name='test_image5.jpg', content=b'5', content_type='image/jpeg')
+        Post.objects.create(subject='test_data', content='no data', create_date=timezone.now(),
+                            user_id=1, category='34')
+        self.client.login(userid='dbsrbals1', password='dbsrbals1')  # id=1
+        self.client.post(reverse('board:comment_create', args=[1]),  # create parent comment
+                         {'content': 'comment_content_not_modify1'})
+        self.client.post(reverse('board:comment_create', args=[1, 1]),  # create child comment
+                         {'content': 'comment_content_not_modify2', 'file_field': [file1, file2]})
+        self.client.post((reverse('board:comment_modify', args=[2])),
+                         {'content': 'comment_content_modified', 'file_field': [file1, file2, file3, file4, file5]})
+        self.assertEqual(len(Comment.objects.filter(content='comment_content_modified')), 1)
+        self.assertEqual(len(Comment.objects.filter(content='comment_content_not_modify2')), 0)
+        self.assertEqual(len(Comment.objects.filter(content='comment_content_not_modify1')), 1)
+        self.assertEqual(Media.objects.count(), 5)
+
+    def test_Ex_NoCommentModify(self):
+        file1 = SimpleUploadedFile(name='test_image1.jpg', content=b'1', content_type='image/jpeg')
+        Post.objects.create(subject='test_data', content='no data', create_date=timezone.now(),
+                            user_id=1, category='34')
+        self.client.login(userid='dbsrbals1', password='dbsrbals1')  # id=1
+        self.client.post(reverse('board:comment_create', args=[1]),  # create parent comment
+                         {'content': 'not yet delete', 'file_field': file1})
+        self.assertEqual(Comment.objects.count(), 1)
+        self.client.get(reverse('board:comment_delete', args=[1]))
+        self.assertEqual(Comment.objects.count(), 0)
+        response = self.client.get(reverse('board:comment_modify', args=[1]))
+        self.assertEqual(response.status_code, 404)
+
+    def test_Ex_InvalidUserModify(self):
+        file1 = SimpleUploadedFile(name='test_image1.jpg', content=b'1', content_type='image/jpeg')
+        Post.objects.create(subject='test_data', content='no data', create_date=timezone.now(),
+                            user_id=1, category='34')
+        self.client.login(userid='dbsrbals1', password='dbsrbals1')  # id=1
+        self.client.post(reverse('board:comment_create', args=[1]),  # create parent comment
+                         {'content': 'content', 'file_field': file1})
+        self.client.logout()
+        self.client.login(userid='dbsrbals', password='dbsrbals')  # id=1
+        response = self.client.get(reverse('board:comment_modify', args=[1]))
+        messages = list(get_messages(response.wsgi_request))
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(messages[0]), '댓글 수정 권한이 없습니다.')
