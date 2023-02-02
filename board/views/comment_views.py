@@ -64,10 +64,13 @@ def comment_modify(request, comment_id):
                 media.file = f
                 media.save()
             return redirect('board:post_detail', post_id=comment.post.id)
-    form = CommentForm(instance=comment)
+    content = str(comment)
+    form = CommentForm(data={'content': content},
+                       instance=comment)
     filelist = list()
     for med in comment.comment_media.all():
         filelist = filelist + [med.file]
     form.fields['file_field'].initial = filelist
     context = {'form': form}
     return render(request, 'board/post_detail.html', context)
+

@@ -630,6 +630,7 @@ class CreateCommentTest(TestCase):
         self.assertEqual(Comment.objects.count(), 0)
         self.client.post(reverse('board:comment_create', args=[1]),
                          {'content': 'comment_content', 'file_field': [file1, file2, file3]})
+        self.assertEqual(str(Comment.objects.get(id=1)), 'comment_content')
         self.assertEqual(Comment.objects.count(), 1)
         self.assertEqual(Media.objects.count(), 3)
         self.client.logout()
@@ -717,8 +718,10 @@ class CreateCommentTest(TestCase):
                          {'content': 'child_comment_content1', 'file_field': [file3, file4]})
         comment_obj = Comment.objects.get(id=1)
         form = CommentForm(instance=comment_obj,
+                           data={'content': 'comment_content'},
                            files=MultiValueDict({'file_field': [file1, file2, file3]}))
         self.assertTrue(form.is_bound)
+        self.assertEqual(form.errors.as_data(), {})
         self.assertTrue((form.fields['content']))
 
         self.client.logout()

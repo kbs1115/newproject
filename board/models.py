@@ -49,6 +49,9 @@ class Comment(models.Model):
     parent_comment = models.ForeignKey("self", on_delete=models.CASCADE, related_name='parent_comment_comment',
                                        null=True)
 
+    def __str__(self):
+        return self.content
+
 
 # 파일테이블 추가 Post테이블을 바라봄
 class Media(models.Model):

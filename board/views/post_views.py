@@ -131,3 +131,4 @@ def post_modify(request, post_id):
     form.fields['file_field'].initial = filelist
     context = {'form': form}
     return render(request, 'board/create_post.html', context)
+
