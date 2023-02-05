@@ -557,6 +557,8 @@ class ModifyPostTest(TestCase):
         self.client.login(userid='bruce1115', password='as1df1234')  # 올바른 사용자의 로그인 후 접근
         response = self.client.get(reverse('board:post_modify', args=[1]))
         form = response.context['form']
+        self.assertTrue(form.is_bound)
+        self.assertEqual(form.errors.as_data(), {})
         self.assertTemplateUsed(response, 'board/create_post.html')
         self.assertEqual(form['subject'].value(), 'test 1')
         self.assertEqual(form['content'].value(), 'no data')
