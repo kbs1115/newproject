@@ -4,8 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
-
-from ..forms import CommentForm, A
+from ..forms import CommentForm
+from django.contrib import messages
 from ..models import Post, Comment, Media
 
 
@@ -75,4 +75,13 @@ def comment_modify(request, comment_id):
     context = {'form': form}
     return render(request, 'board/post_detail.html', context)
 
+
+@login_required(login_url="common:login")
+def comment_vote(request, comment_id):
+    comment = get_object_or_404(Comment, pk=comment_id)
+    if request.user == comment.user:
+        messages.error(request, '본인이 작성한 댓글은 추천할 수 없습니다.')
+    else:
+        comment.voter.add(request.user)
+    return redirect('board:post_detail', post_id=comment.post.id)
 
