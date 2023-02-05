@@ -4,10 +4,9 @@ from django.db.models import Count, Q
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.utils import timezone
-from board.forms import PostForm
-from board.models import Post, Media
+from board.forms import PostForm, CommentForm
+from board.models import Post, Media, Comment
 from django.utils.datastructures import MultiValueDict
-
 
 
 def posts(request, category: int):
@@ -60,7 +59,8 @@ def posts(request, category: int):
 
 def post_detail(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
-    context = {'post': post}
+    form = CommentForm()
+    context = {'post': post, 'form': form}
     return render(request, 'board/post_detail.html', context)
 
 
@@ -99,6 +99,7 @@ def post_create(request):
     context = {'form': form}
     return render(request, 'board/create_post.html', context)
 
+
 @login_required(login_url="common:login")
 def post_modify(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
@@ -111,9 +112,8 @@ def post_modify(request, post_id):
         if form.is_valid():
             images.delete()
             post = form.save(commit=False)
-            post.user = request.user
-            post.create_date = timezone.now()
-            post.save() # 기존의 데이터는 modelform을 활용하여 저장한다.
+            post.modify_date = timezone.now()
+            post.save()  # 기존의 데이터는 modelform을 활용하여 저장한다.
             files = request.FILES.getlist('file_field')
             if files is not None:
                 for f in files:
