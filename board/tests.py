@@ -599,13 +599,13 @@ class VotePostTest(TestCase):
         user2 = User.objects.create(userid='kbs1115', email='bruce11158@naver.com',
                                     password=hashed_password, nickname='BRUCE2')
         p = Post.objects.create(subject='test 1', content='no data', user_id=1, category='20'
-                               ,create_date=timezone.now())
+                                , create_date=timezone.now())
 
     def setUp(self):
         client = Client()
 
     def test_sameUser(self):
-        self.client.login(userid='bruce1115', password='as1df1234') # 글 작성자와 같은 유저가 추천
+        self.client.login(userid='bruce1115', password='as1df1234')  # 글 작성자와 같은 유저가 추천
         response = self.client.get(reverse('board:post_vote', args=[1]))
         messages = list(get_messages(response.wsgi_request))
         self.assertEqual(len(messages), 1)
@@ -615,7 +615,7 @@ class VotePostTest(TestCase):
         self.assertRedirects(response, reverse('board:post_detail', args=[1]), status_code=302)
 
     def test_anotherUser(self):
-        self.client.login(userid='kbs1115', password='as1df1234') # 글 작성자 이외의 유저가 추천
+        self.client.login(userid='kbs1115', password='as1df1234')  # 글 작성자 이외의 유저가 추천
         response = self.client.get(reverse('board:post_vote', args=[1]))
         count = Post.objects.get(pk=1).voter.all().count()
         self.assertEqual(count, 1)
@@ -776,7 +776,6 @@ class CreateCommentTest(TestCase):
         self.assertEqual(len(Comment.objects.filter(parent_comment=None)), 1)
 
 
-
 class CommentModify(TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -877,24 +876,25 @@ class CommentModify(TestCase):
         messages = list(get_messages(response.wsgi_request))
         self.assertEqual(len(messages), 1)
         self.assertEqual(str(messages[0]), '댓글 수정 권한이 없습니다.')
-        
+
+
 class VoteCommentTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         hashed_password = make_password('as1df1234')
         User.objects.create(userid='bruce1115', email='bruce1115@naver.com',
-                                    password=hashed_password, nickname='BRUCE')
+                            password=hashed_password, nickname='BRUCE')
         User.objects.create(userid='kbs1115', email='bruce11158@naver.com',
-                                    password=hashed_password, nickname='BRUCE2')
+                            password=hashed_password, nickname='BRUCE2')
         Post.objects.create(subject='test 1', content='no data', user_id=1, category='20'
-                               ,create_date=timezone.now())
+                            , create_date=timezone.now())
         Comment.objects.create(content='test data', user_id=2, post_id=1, create_date=timezone.now())
 
     def setUp(self):
         client = Client()
 
     def test_sameUser(self):
-        self.client.login(userid='kbs1115', password='as1df1234') # 글 작성자와 같은 유저가 추천
+        self.client.login(userid='kbs1115', password='as1df1234')  # 글 작성자와 같은 유저가 추천
         response = self.client.get(reverse('board:comment_vote', args=[1]))
         messages = list(get_messages(response.wsgi_request))
         self.assertEqual(len(messages), 1)
@@ -904,10 +904,8 @@ class VoteCommentTest(TestCase):
         self.assertRedirects(response, reverse('board:post_detail', args=[comment.post.id]), status_code=302)
 
     def test_anotherUser(self):
-        self.client.login(userid='bruce1115', password='as1df1234') # 글 작성자 이외의 유저가 추천
+        self.client.login(userid='bruce1115', password='as1df1234')  # 글 작성자 이외의 유저가 추천
         response = self.client.get(reverse('board:comment_vote', args=[1]))
         comment = Comment.objects.get(pk=1)
         self.assertEqual(comment.voter.all().count(), 1)
         self.assertRedirects(response, reverse('board:post_detail', args=[comment.post.id]), status_code=302)
-        
-
