@@ -70,3 +70,8 @@ def mypage_modify(request):
     form = UserUpdateForm(instance=user)
     context = {'form': form}
     return render(request, "common/modify.html", context)
+
+
+# @login_required(login_url="common:login")
+# def notice(request):
+#     voter_myPost = Post.objects.filter()
