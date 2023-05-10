@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.utils import timezone
 from board.forms import PostForm, CommentForm
 from board.models import Post, Media
-from common.models import Alert
+from common.models import Notification, Data
 
 
 def posts(request, category: int):
@@ -71,7 +71,6 @@ def post_delete(request, post_id):
         messages.error(request, "게시글 삭제 권한이 없습니다.")
         # return redirect("board:posts", category=post.category) 여기에 post_detail url로 넘겨 줘야함.
     post.delete()
-    filtered_notification = Alert.objects.filter(alert_type=)
     return redirect("board:posts", category=post.category)
 
 
@@ -141,5 +140,11 @@ def post_vote(request, post_id):
         messages.error(request, '본인이 작성한 글은 추천할 수 없습니다.')
     else:
         post.voter.add(request.user)
+        data = Data.sent_user.add(request.user)
+        data.post = post
+        data.notice_type = "vote_of_post"
+        data.save()
+        notification = Notification.received_user.add(post.user)
+        notification.create_date = timezone.now()
+        notification.data = data
     return redirect('board:post_detail', post_id=post.id)
-
