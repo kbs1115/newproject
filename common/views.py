@@ -72,6 +72,6 @@ def mypage_modify(request):
     return render(request, "common/modify.html", context)
 
 
-# @login_required(login_url="common:login")
-# def notice(request):
-#     voter_myPost = Post.objects.filter()
+@login_required(login_url="common:login")
+def notice(request):
+    voter_myPost = Post.objects.filter()

@@ -5,8 +5,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.utils import timezone
 from board.forms import PostForm, CommentForm
-from board.models import Post, Media, Comment
-from django.utils.datastructures import MultiValueDict
+from board.models import Post, Media
+from common.models import Alert
 
 
 def posts(request, category: int):
@@ -71,6 +71,7 @@ def post_delete(request, post_id):
         messages.error(request, "게시글 삭제 권한이 없습니다.")
         # return redirect("board:posts", category=post.category) 여기에 post_detail url로 넘겨 줘야함.
     post.delete()
+    filtered_alert = Alert.objects.filter(alert_type=)
     return redirect("board:posts", category=post.category)
 
 
