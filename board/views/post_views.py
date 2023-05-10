@@ -140,11 +140,8 @@ def post_vote(request, post_id):
         messages.error(request, '본인이 작성한 글은 추천할 수 없습니다.')
     else:
         post.voter.add(request.user)
-        data = Data.sent_user.add(request.user)
-        data.post = post
-        data.notice_type = "vote_of_post"
+        data = Data.objects.create(sent_user=request.user, post=post, notice_type="vote_of_post")
         data.save()
-        notification = Notification.received_user.add(post.user)
-        notification.create_date = timezone.now()
-        notification.data = data
+        notification = Notification.objects.create(received_user=post.user, create_date=timezone.now(), data=data)
+        notification.save()
     return redirect('board:post_detail', post_id=post.id)
