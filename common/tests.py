@@ -1,4 +1,6 @@
 from django.test import TestCase, Client
+
+from common.models import Notification
 from users.models import User
 from django.urls import reverse
 from django.contrib.auth.hashers import make_password
@@ -185,3 +187,32 @@ class UpdateTest(TestCase):
         self.assertEqual(form["nickname"].value(), "BRUCE")
         self.assertEqual(form["email"].value(), "bruce1115@naver.com")
         self.assertTemplateUsed(response, "common/modify.html")
+
+
+class NotificationTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        hashed_password = make_password('as1df1234')
+        user1 = User.objects.create(userid='aa', email='bruce1115@naver.com',
+                                    password=hashed_password, nickname='BRUCE')
+        user2 = User.objects.create(userid='bb', email='bruce11158@gmail.com',
+                                    password=hashed_password, nickname='KBS')
+        Post.objects.create(subject='yahoo', content='1111 cccc', create_date=timezone.now(),
+                            user_id=1, category='20')
+
+    def setUp(self):
+        client = Client()
+
+    def test_Is_data_in_notificationModel_if_post_vote(self):
+        user = self.client.login(userid="bb", password="as1df1234")
+        notice_count = Notification.objects.count()
+        self.assertEqual(notice_count, 0)
+        self.client.get(reverse('board:post_vote', args=[1]))
+        post = Post.objects.get(pk=1)
+        notice = Notification.objects.get(pk=1)
+        self.assertEqual(post.voter.all().count(), 1)
+        self.assertEqual(Notification.objects.count(), 1)
+        self.assertEqual(notice.received_user, post.user)
+        self.assertEqual(notice.data.post, post)
+        self.assertEqual(notice.data.sent_user, user)
+        self.assertEqual(notice.data.notice_type, "vote_of_post")

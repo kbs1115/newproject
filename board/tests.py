@@ -1,12 +1,7 @@
-from django.contrib.auth.hashers import make_password
-from django.core.files.uploadedfile import SimpleUploadedFile
-from django.shortcuts import resolve_url
 from django.contrib.messages import get_messages
 from django.contrib.auth.hashers import make_password
 from django.test import TestCase, Client
 from django.urls import reverse
-from django.utils.datastructures import MultiValueDict
-
 from .forms import CommentForm
 from .models import Post, Comment, Media
 from users.models import User
