@@ -1,3 +1,4 @@
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, Client
 
 from common.models import Notification
@@ -194,9 +195,9 @@ class NotificationTest(TestCase):
     def setUpTestData(cls):
         hashed_password = make_password('as1df1234')
         User.objects.create(userid='aa', email='bruce1115@naver.com',
-                                    password=hashed_password, nickname='BRUCE')
+                            password=hashed_password, nickname='BRUCE')
         User.objects.create(userid='bb', email='bruce11158@gmail.com',
-                                    password=hashed_password, nickname='KBS')
+                            password=hashed_password, nickname='KBS')
         Post.objects.create(subject='yahoo', content='1111 cccc', create_date=timezone.now(),
                             user_id=1, category='20')
 
@@ -229,4 +230,21 @@ class NotificationTest(TestCase):
         self.assertEqual(Post.objects.all().count(), 0)
         self.assertEqual(Notification.objects.count(), 0)
 
+    def test_Is_data_in_notificationModel_if_comment_of_post(self):
+        self.client.login(userid="bb", password="as1df1234")
+        comment = Post.objects.get(pk=1).comment_set.all()
+        self.assertEqual(comment.count(), 0)
+        self.assertEqual(Notification.objects.all().count(), 0)
+        self.client.post(reverse('board:comment_create', args=[1]),
+                         {'content': 'test_content'})
+        comment = Post.objects.get(pk=1).comment_set.all()
+        self.assertEqual(comment.count(), 1)
+        self.assertEqual(Notification.objects.all().count(), 1)
 
+        notice = Notification.objects.get(pk=1)
+        post = Post.objects.get(pk=1)
+        comment = Comment.objects.get(pk=1)
+        self.assertEqual(notice.received_user, post.user)
+        self.assertEqual(notice.data.sent_user, comment.user)
+        self.assertEqual(notice.data.comment, comment)
+        self.assertEqual(notice.data.notice_type, "comment_of_post")
