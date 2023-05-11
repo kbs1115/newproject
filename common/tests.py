@@ -193,9 +193,9 @@ class NotificationTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         hashed_password = make_password('as1df1234')
-        user1 = User.objects.create(userid='aa', email='bruce1115@naver.com',
+        User.objects.create(userid='aa', email='bruce1115@naver.com',
                                     password=hashed_password, nickname='BRUCE')
-        user2 = User.objects.create(userid='bb', email='bruce11158@gmail.com',
+        User.objects.create(userid='bb', email='bruce11158@gmail.com',
                                     password=hashed_password, nickname='KBS')
         Post.objects.create(subject='yahoo', content='1111 cccc', create_date=timezone.now(),
                             user_id=1, category='20')
@@ -204,15 +204,29 @@ class NotificationTest(TestCase):
         client = Client()
 
     def test_Is_data_in_notificationModel_if_post_vote(self):
-        user = self.client.login(userid="bb", password="as1df1234")
+        self.client.login(userid="bb", password="as1df1234")
         notice_count = Notification.objects.count()
         self.assertEqual(notice_count, 0)
-        self.client.get(reverse('board:post_vote', args=[1]))
+        response = self.client.get(reverse('board:post_vote', args=[1]))
+        user_bb = response.wsgi_request.user
         post = Post.objects.get(pk=1)
         notice = Notification.objects.get(pk=1)
         self.assertEqual(post.voter.all().count(), 1)
         self.assertEqual(Notification.objects.count(), 1)
         self.assertEqual(notice.received_user, post.user)
         self.assertEqual(notice.data.post, post)
-        self.assertEqual(notice.data.sent_user, user)
+        self.assertEqual(notice.data.sent_user, user_bb)
         self.assertEqual(notice.data.notice_type, "vote_of_post")
+
+    def test_Is_voteData_in_notificationModel_if_post_delete(self):
+        self.client.login(userid="bb", password="as1df1234")
+        self.assertEqual(Post.objects.all().count(), 1)
+        self.client.get(reverse('board:post_vote', args=[1]))
+        self.assertEqual(Notification.objects.count(), 1)
+        self.client.logout()
+        self.client.login(userid="aa", password="as1df1234")
+        self.client.get(reverse('board:post_delete', args=[1]))
+        self.assertEqual(Post.objects.all().count(), 0)
+        self.assertEqual(Notification.objects.count(), 0)
+
+
