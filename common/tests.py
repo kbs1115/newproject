@@ -1,6 +1,4 @@
-from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, Client
-
 from common.models import Notification
 from users.models import User
 from django.urls import reverse
