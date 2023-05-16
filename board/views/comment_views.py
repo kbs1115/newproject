@@ -22,7 +22,8 @@ def comment_create(request, post_id, parent_comment_id=None):
                 comment.parent_comment = Comment.objects.get(id=parent_comment_id)
             comment.save()
             if parent_comment_id is not None:
-                data = Data.objects.create(sent_user=request.user, comment=comment, notice_type="reply_of_comment")
+                data = Data.objects.create(sent_user=request.user, comment=comment,
+                                           notice_type="reply_of_comment")
                 data.save()
                 receiver = Comment.objects.get(id=parent_comment_id).user
                 notification = Notification.objects.create(received_user=receiver, create_date=timezone.now(),
