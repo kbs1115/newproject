@@ -5,6 +5,8 @@ from common.forms import UserForm, UserUpdateForm
 from board.models import Post, Comment
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
+
+from common.models import Notification
 from users.models import User
 
 
@@ -73,5 +75,8 @@ def mypage_modify(request):
 
 
 @login_required(login_url="common:login")
-def notice(request):
-    voter_myPost = Post.objects.filter()
+def notifications(request):
+    notification_data = Notification.objects.filter(received_user=request.user).order_by(
+        '-create_date')
+    context = {'notifications': notification_data}
+    return render(request, 'common/notifications.html', context)
