@@ -1,0 +1,36 @@
+{% load static %}
+<!doctype html>
+<html lang="ko">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width", initial-scale="1", shrink-to-fit="no">
+    <!-- pybo CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'navbar.css' %}">
+    <title>Hello, pybo!</title>
+</head>
+<body>
+<nav class="navbar">
+  <div class="navbar-innerbox">
+    <ul>
+      <li>
+        <a href="{% url 'board:index' %}">
+          <img alt="EduMax" src="/static/img/logo.png">EduMax</a>
+      </li>
+      <li><a href="">마이페이지</a></li>
+      <li><a href="">알림</a></li>
+      <li><a href="">회원가입</a></li>
+      <li><a href="">로그인</a></li>
+      <li>
+        <input type="text" id="search_kw" value="{{ kw|default_if_none:'' }}">
+        <a href=""><img src="/static/img/nav-search-icon.png" alt="search"></a>
+      </li>
+    </ul>
+  </div>
+</div>
+<!-- 기본 템플릿 안에 삽입될 내용 Start -->
+{% block content %}
+{% endblock %}
+<!-- 기본 템플릿 안에 삽입될 내용 End -->
+</body>
+</html
