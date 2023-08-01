@@ -7,6 +7,8 @@
     <meta name="viewport" content="width=device-width", initial-scale="1", shrink-to-fit="no">
     <!-- pybo CSS -->
     <link rel="stylesheet" type="text/css" href="{% static 'navbar.css' %}">
+    {% block extrahead %}
+    {% endblock %}
     <title>Hello, pybo!</title>
 </head>
 <body>
@@ -38,15 +40,15 @@
       </li>
     </ul>
   </div>
-</div>
+</nav>
+<form id="searchForm" method="get" action="{% url 'board:search' %}">
+  <input type="hidden" id="kw" name="kw" value="{{ kw|default_if_none:'' }}">
+</form>
 <!-- 기본 템플릿 안에 삽입될 내용 Start -->
 {% block content %}
 {% endblock %}
 <!-- 기본 템플릿 안에 삽입될 내용 End -->
 <!-- 검색을 위한 hidden form 추가 -->
-<form id="searchForm" method="get" action="{% url 'board:search' %}">
-  <input type="hidden" id="kw" name="kw" value="{{ kw|default_if_none:'' }}">
-</form>
 {% block script %}
 <script type='text/javascript'>
   const btn_search = document.getElementById("btn_search");

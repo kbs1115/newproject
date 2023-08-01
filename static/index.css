@@ -1,0 +1,84 @@
+.container {
+    width: 1200px;
+    display: flex;
+    justify-content: center;
+    margin: auto;
+}
+.post_box {
+    width: 370px;
+    height: 400px;
+    border: 1px solid #DFE5EE;
+    background: #F7F8FA;
+    flex-shrink: 0;
+    margin: 0 15px;
+}
+.post_subject {
+    width: 368px;
+    height: 66.667px;
+    background: #FFF;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.subject_innerbox {
+    width: 332px;
+    height: 24px;
+    flex-shrink: 0;
+    color: #000;
+    font-family: Noto Sans KR;
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
+.subject_innerbox > a {
+    width: 22px;
+    height: 22px;
+    background: url("/static/img/right-arrow-index.png");
+    flex-shrink: 0;
+    float: right;
+}
+.posts {
+    width: 368px;
+    height: 63px;
+    border: 1px solid #F3F4F8;
+    background: #FFF;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.post_textbox {
+    display: flex;
+    width: 245px;
+    height: 24px;
+    overflow: hidden;
+    flex-direction: column;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #000;
+    font-family: Noto Sans KR;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    text-overflow: ellipsis;
+}
+.post_infobox {
+    display: flex;
+    width: 88px;
+    height: 40px;
+    overflow: hidden;
+    flex-direction: column;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #A8AAAE;
+    font-family: Noto Sans KR;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    text-align: right;
+    text-overflow: ellipsis;
+}
