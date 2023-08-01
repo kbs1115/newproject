@@ -11,19 +11,30 @@
 </head>
 <body>
 <nav class="navbar">
-  <div class="navbar-innerbox">
+  <div class="nav-upperinnerbox">
     <ul>
       <li>
         <a href="{% url 'board:index' %}">
-          <img alt="EduMax" src="/static/img/logo.png">EduMax</a>
+          <img alt="EduMax" src="/static/img/Edumaxlogo.png">EduMax</a>
       </li>
       <li><a href="">마이페이지</a></li>
       <li><a href="">알림</a></li>
       <li><a href="">회원가입</a></li>
       <li><a href="">로그인</a></li>
+    </ul>
+  </div>
+  <div class="nav-underinnerbox">
+    <ul>
+      <li><a href="">질문게시판</a></li>
+      <li><a href="">자료게시판</a></li>
+      <li><a href="">자유게시판</a></li>
+      <li><a href="">공지사항</a></li>
+      <li><a href="">선생님강의</a></li>
       <li>
         <input type="text" id="search_kw" value="{{ kw|default_if_none:'' }}">
-        <a href="javascript:void(0)" id="btn_search"><img src="/static/img/nav-search-icon.png" alt="search"></a>
+        <button type="button" id="btn_search">
+          <img src="/static/img/nav-search-icon.png" alt="search">
+        </button>
       </li>
     </ul>
   </div>
