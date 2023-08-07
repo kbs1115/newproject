@@ -188,6 +188,54 @@
 		<a class="menus" href="">유튜브 바로가기</a>
 	</div>
 </div>
+<div class="thirdbox">
+	<div class="third-uppernav">
+		<div class="navsubject">
+			<svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 35 35" fill="none">
+				<path fill-rule="evenodd" clip-rule="evenodd" d="M17.5 35C27.165 35 35 27.165 35 17.5C35 7.83502 27.165 0 17.5 0C7.83502 0 0 7.83502 0 17.5C0 27.165 7.83502 35 17.5 35ZM16.0068 23.5505L23.4865 19.2321C24.8198 18.4623 24.8198 16.5378 23.4865 15.768L16.0068 11.4495C14.6734 10.6797 13.0068 11.642 13.0068 13.1816L13.0068 21.8184C13.0068 23.358 14.6734 24.3203 16.0068 23.5505Z" fill="#1288FE"/>
+			</svg>
+				에듀맥스 선생님 강의
+		</div>
+		<div class="subjects">
+			<a href="javascript:void(0)" class="active" data-tab="korean-video">국어</a>
+			<a href="javascript:void(0)" data-tab="math-video">수학</a>
+			<a href="javascript:void(0)" data-tab="english-video">영어</a>
+			<a href="javascript:void(0)"></a>
+		</div>
+	</div>
+	<div class="thirdbox-tabcontent active" id="korean-video">
+		<a href='' class="video">
+			<img src="/static/img/examplevideo.png" alt="video1">
+			<div class="videoname">동영상1</div>
+			<div class="videoteacher">선생님1</div>
+		</a>
+		<a href='' class="video">
+			<img src="/static/img/examplevideo.png" alt="video2">
+			<div class="videoname">동영상2</div>
+			<div class="videoteacher">선생님2</div>
+		</a>
+		<a href='' class="video">
+			<img src="/static/img/examplevideo.png" alt="video3">
+			<div class="videoname">동영상3</div>
+			<div class="videoteacher">선생님3</div>
+		</a>
+		<a href='' class="video">
+			<img src="/static/img/examplevideo.png" alt="video4">
+			<div class="videoname">동영상4</div>
+			<div class="videoteacher">선생님4</div>
+		</a>
+	</div>
+	<div class="thirdbox-tabcontent" id="math-video">수학동영상</div>
+	<div class="thirdbox-tabcontent" id="english-video">영어동영상</div>
+</div>
+<div class="sidearrows">
+	<div class="arrows"><svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" viewBox="0 0 45 45" fill="none">
+		<path opacity="0.2" fill-rule="evenodd" clip-rule="evenodd" d="M0 45L45 45L45 0L0 0L0 45ZM12.4428 24.6625L28.3527 40.5724C29.329 41.5487 30.9119 41.5487 31.8882 40.5724C32.8645 39.5961 32.8645 38.0132 31.8882 37.0369L17.7461 22.8947L31.8882 8.7526C32.8645 7.77629 32.8645 6.19338 31.8882 5.21707C30.9119 4.24076 29.329 4.24076 28.3527 5.21707L12.4428 21.127C11.4664 22.1033 11.4664 23.6862 12.4428 24.6625Z" fill="black"/>
+	</svg></div>
+	<div class="arrows"><svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" viewBox="0 0 45 45" fill="none">
+		<path opacity="0.2" fill-rule="evenodd" clip-rule="evenodd" d="M45 0H0V45H45V0ZM32.5572 20.3375L16.6473 4.42759C15.671 3.45128 14.0881 3.45128 13.1118 4.42759C12.1355 5.4039 12.1355 6.98682 13.1118 7.96313L27.2539 22.1053L13.1118 36.2474C12.1355 37.2237 12.1355 38.8066 13.1118 39.7829C14.0881 40.7592 15.671 40.7592 16.6473 39.7829L32.5572 23.873C33.5336 22.8967 33.5336 21.3138 32.5572 20.3375Z" fill="black"/>
+	</svg></div>
+</div>
 <script>
 var tabItems = document.querySelectorAll('.tab-subject');
 
@@ -195,18 +243,38 @@ tabItems.forEach(tabItem => {
 	tabItem.addEventListener('click',() => {
 		var tab_id = tabItem.getAttribute('data-tab');
 
-    tabItems.forEach(tab => {
-      tab.classList.remove('current');
-    });
+    	tabItems.forEach(tab => {
+      		tab.classList.remove('current');
+    	});
 
-    var tabContents = document.querySelectorAll('.tab-content');
-    tabContents.forEach(content => {
-      content.classList.remove('current');
-    });
+    	var tabContents = document.querySelectorAll('.tab-content');
+    	tabContents.forEach(content => {
+      		content.classList.remove('current');
+    	});
 
-    tabItem.classList.add('current');
-    document.getElementById(tab_id).classList.add('current');
+    	tabItem.classList.add('current');
+   	 	document.getElementById(tab_id).classList.add('current');
 	});
 });
+
+var videoTabItems = document.querySelectorAll('.subjects > a:nth-child(-n+3)');
+
+videoTabItems.forEach(tabItem => {
+	tabItem.addEventListener('click',() => {
+		var tab_id = tabItem.getAttribute('data-tab');
+
+    	videoTabItems.forEach(tab => {
+      		tab.classList.remove('active');
+    	});
+
+    	var tabContents = document.querySelectorAll('.thirdbox-tabcontent');
+    	tabContents.forEach(content => {
+      		content.classList.remove('active');
+    	});
+
+    	tabItem.classList.add('active');
+   	 	document.getElementById(tab_id).classList.add('active');
+	});
+})
 </script>
 {% endblock %}
