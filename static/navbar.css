@@ -133,5 +133,11 @@ body {
     margin-right: auto;
     cursor: pointer;
 }
+.nav-underinnerbox > ul > li:last-child > button > img {
+    margin-top: 6px;
+    width: 22px;
+    height: 22px;
+    border: none;
+}
 
 
