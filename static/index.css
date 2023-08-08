@@ -286,7 +286,7 @@
 }
 .videoname {
     width: 240px;
-    height: 19px;
+    height: 24px;
     color: #000;
     font-family: Noto Sans KR;
     font-size: 16px;
@@ -297,7 +297,7 @@
 }
 .videoteacher {
     width: 200px;
-    height: 19px;
+    height: 21px;
     color: var(--unnamed, #045DEB);
     font-family: Noto Sans KR;
     font-size: 14px;
