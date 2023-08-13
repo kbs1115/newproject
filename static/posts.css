@@ -1,0 +1,299 @@
+.container {
+    width: 1170px;
+    height: 1542px;
+    overflow: hidden;
+    background: var(--unnamed, #F3F4F8);
+    display: flex;
+    flex-direction: row;
+}
+.sidebar {
+    display: flex;
+    width: 197px;
+    height: 400px;
+    border-radius: 5px;
+    border: 3px solid var(--unnamed, #DFE5EE);
+    background: #FFF;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.sidebar-menu {
+    display: flex;
+    height: 79px;
+    padding-left: 15px;
+    border-bottom: 1px solid var(--unnamed, #DFE5EE);
+    background: #FFF;
+    text-align: start;
+    align-items: center;
+    align-self: stretch;
+    color: var(--unnamed, #393E46);
+    font-family: Noto Sans KR;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    cursor: pointer;
+}
+.sidebar-menu:last-child {
+    border-bottom: none;
+}
+.sidebar-menu:last-child > a > img {
+    margin-left: 10px;
+    width: 26px;
+    height: 26px;
+}
+.sidebar-menu.active {
+    background: var(--unnamed, #4A5BAB);
+}
+.sidebar-menu.active > a {
+    color: white;
+}
+.mainarea {
+    display: flex;
+    flex-direction: column;
+    width: 923px;
+    height: 1539px;
+    overflow: hidden;
+    margin-left: 56px;
+    border-radius: 5px;
+    background: #F3F4F8;
+    flex-shrink: 0;
+}
+.upperarea {
+    width: 100%;
+    height: 75px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--unnamed, #393E46);
+    background: var(--unnamed, #F3F4F8);
+    margin-bottom: 40px;
+}
+.postsname {
+    width: 250px;
+    height: 58px;
+    color: var(--unnamed, #393E46);
+    font-family: Noto Sans KR;
+    font-size: 40px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    letter-spacing: 2px;
+}
+.write {
+    width: 98px;
+    height: 43px;
+    border-radius: 5px;
+    border: 2px solid var(--unnamed, #393E46);
+    background: var(--unnamed, #4A5BAB);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #FFF;
+    font-family: Noto Sans KR;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: 0.9px;
+    text-align: center;
+    cursor: pointer;
+}
+.tabmenu {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 50px;
+    margin-bottom: 41px;
+}
+.tabmenu-item > a {
+    width: 230.25px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--unnamed, #DFE5EE);
+    background: #FFF;
+    color: var(--unnamed, #393E46);
+    text-align: center;
+    font-family: Noto Sans KR;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: 1px;
+}
+
+.tabmenu-item.active > a {
+    background: var(--unnamed, #4A5BAB);
+    color: #FFF;
+}
+.orderAndSearch {
+    width: 100%;
+    height: 32px;
+    margin-bottom: 16.5px;
+}
+.createdate > a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    float: left;
+    width: 64px;
+    height: 31px;
+    background-color: var(--unnamed, #393E46);
+    color: #FFF;
+    text-align: center;
+    font-family: Noto Sans KR;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: 0.9px;
+}
+.recommend {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    float: left;
+    width: 64px;
+    height: 31px;
+    color: var(--unnamed, #393E46);
+    background-color: #FFF;
+    text-align: center;
+    font-family: Noto Sans KR;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: 0.9px;
+    border: 1px solid var(--unnamed, #DFE5EE);
+}
+.searchbar-posts {
+    float: right;
+    display: flex;
+    flex-direction: row;
+    height: 31px;
+    align-items: center;
+    gap: 10px;
+}
+.dropbtn {
+    display: flex;
+    width: 145px;
+    height: 39px;
+    padding: 10px 15px;
+    border-radius: 15px;
+    border: 1px solid var(--unnamed, #393E46);
+    background: #FFF;
+    justify-content: center;
+    align-items: center;
+    gap: 80px;
+}
+.searchinput-posts {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 359px;
+    height: 38px;
+    border-radius: 15px;
+    border: 1px solid var(--unnamed, #393E46);
+    flex-shrink: 0;
+    background: #FFF;
+}
+.searchinput-posts > input {
+    width: 310px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    color: #000;
+    font-family: Noto Sans KR;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    margin-left: 5px;
+}
+.searchinput-posts > input:focus {
+    outline: none;
+}
+.searchinput-posts > button {
+    width: 27px;
+    height: 27px;
+    border: none;
+    margin-right: auto;
+    cursor: pointer;
+    background: white;
+}
+.searchinput-posts > button > img {
+    margin-top: 3px;
+    width: 22px;
+    height: 22px;
+    border: none;
+}
+table {
+    width: 100%;
+    border: 1px solid #DFE5EE;
+    border-top: 1px solid var(--unnamed, #393E46);
+    border-collapse: collapse;
+}
+.table-number {
+    display: flex;
+    width: 88px;
+    justify-content: center;
+    align-items: center;
+}
+.table-name {
+    display: flex;
+    width: 460px;
+    justify-content: start;
+    align-items: center;
+}
+.table-author {
+    display: flex;
+    width: 113px;
+    justify-content: center;
+    align-items: center;
+}
+.table-date {
+    display: flex;
+    width: 164px;
+    justify-content: center;
+    align-items: center;
+}
+.table-recommend {
+    display: flex;
+    width: 95px;
+    justify-content: center;
+    align-items: center;
+}
+tr {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 54px;
+    background-color: #FFF;
+    border-bottom: 1px solid #DFE5EE;
+}
+tr:first-child {
+    background: #F3F4F8;
+}
+th {
+    justify-content: center!important; 
+}
+th, td {
+    box-sizing: border-box;
+    color: var(--unnamed, #4B4F59);
+    text-align: center;
+    font-family: Noto Sans KR;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: 0.9px;
+    border-collapse : collapse;
+    padding: 10px 0px;
+}
+td {
+    color: var(--unnamed, #A8AAAE);
+    padding: 10px 20px;
+}

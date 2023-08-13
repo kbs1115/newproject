@@ -1,10 +1,75 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'base.html' %}
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+  {% load static %}
+  {% block extrahead %}
+  <link rel="stylesheet" href="{% static 'posts.css' %}">
+  {% endblock %}
 </head>
-<body>
+{% block content %}
+<div class="container">
+    <div class="sidebar">
+        <div class="sidebar-menu active"><a>질문과 답변</a></div>
+        <div class="sidebar-menu"><a>자료게시판</a></div>
+        <div class="sidebar-menu"><a>자유게시판</a></div>
+        <div class="sidebar-menu"><a>내가 쓴 게시글</a></div>
+        <div class="sidebar-menu"><a>글쓰기<img src="/static/img/writeicon.png" alt=""></a></div>
+    </div>
+    <div class="mainarea">
+        <div class="upperarea">
+            <div class="postsname">질문게시판</div>
+            <button class="write">글쓰기</button>
+        </div>
+        <div class="tabmenu">
+            <div class="tabmenu-item active"><a href="">국어</a></div>
+            <div class="tabmenu-item"><a href="">수학</a></div>
+            <div class="tabmenu-item"><a href="">영어</a></div>
+            <div class="tabmenu-item"><a href="">탐구</a></div>
+        </div>
+        <div class="orderAndSearch">
+            <div class="createdate"><a href="">최신순</a></div>
+            <div class="recommend"><a href="">추천순</a></div>
+            <div class="searchbar-posts">
+                <div class="dropdown">
+                    <button class="dropbtn">
 
-</body>
-</html>
+                    </button>
+                </div>
+                <div class="searchinput-posts">
+                    <input type="text" id="search_kw_posts" value="{{ kw_posts|default_if_none:'' }}">
+                    <button type="button" id="btn_search_posts"><img src="/static/img/nav-search-icon.png" alt="search"></button>
+                </div>
+            </div>
+        </div>
+        <table>
+            <tr>
+                <th class="table-number">번호</th>
+                <th class="table-name">제목</th>
+                <th class="table-author">글쓴이</th>
+                <th class="table-date">등록일</th>
+                <th class="table-recommend">추천</th>
+            </tr>
+            <tr>
+                <td class="table-number">1</td>
+                <td class="table-name"><a href="">질문글 예시 1</a></td>
+                <td class="table-author">윤규민</td>
+                <td class="table-date">2020-08-12</td>
+                <td class="table-recommend">13</td>
+            </tr>
+            <tr>
+                <td class="table-number">1</td>
+                <td class="table-name"><a href="">질문글 예시 2</a></td>
+                <td class="table-author">윤규민</td>
+                <td class="table-date">2020-08-12</td>
+                <td class="table-recommend">13</td>
+            </tr>
+            <tr></tr>
+            <tr></tr>
+            <tr></tr>
+            <tr></tr>
+            <tr></tr>
+            <tr></tr>
+            <tr></tr>
+        </table>
+    </div>
+</div>
+{% endblock %}
