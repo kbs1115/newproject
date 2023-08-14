@@ -11,7 +11,7 @@ from django.utils.datastructures import MultiValueDict
 
 def posts(request, category: int):
     detail = request.GET.get('detail', 'all')  # all , subject ,content, user, subAndContent
-    kw = request.GET.get('kw', '')
+    kw = request.GET.get('kw_posts', '')
     sort = request.GET.get('sort', 'update')  # sort 종류는 -create_date, 추천수 2개가 있음
     page = request.GET.get('page', '1')  # 페이징 처리
 

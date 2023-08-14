@@ -133,24 +133,7 @@
     height: 32px;
     margin-bottom: 16.5px;
 }
-.createdate > a {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    float: left;
-    width: 64px;
-    height: 31px;
-    background-color: var(--unnamed, #393E46);
-    color: #FFF;
-    text-align: center;
-    font-family: Noto Sans KR;
-    font-size: 18px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: normal;
-    letter-spacing: 0.9px;
-}
-.recommend {
+.order > a {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -168,6 +151,29 @@
     letter-spacing: 0.9px;
     border: 1px solid var(--unnamed, #DFE5EE);
 }
+.order.active > a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    float: left;
+    width: 64px;
+    height: 31px;
+    background-color: var(--unnamed, #393E46);
+    color: #FFF;
+    text-align: center;
+    font-family: Noto Sans KR;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: 0.9px;
+}
+.dropdown {
+    position: relative;
+}
+.dropdown ul {
+    position: absolute;
+}
 .searchbar-posts {
     float: right;
     display: flex;
@@ -180,13 +186,52 @@
     display: flex;
     width: 145px;
     height: 39px;
-    padding: 10px 15px;
     border-radius: 15px;
     border: 1px solid var(--unnamed, #393E46);
     background: #FFF;
     justify-content: center;
     align-items: center;
-    gap: 80px;
+    cursor: pointer;
+}
+.dropbtn > div {
+    width: 100px;
+    height: 22px;
+    color: var(--unnamed, #393E46);
+    font-family: Noto Sans KR;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: 0.75px;
+    text-align: center;
+}
+.dropbtn > img {
+    width: 11px;
+    height: 11px;
+}
+.dropdown_list {
+    width: 130px;
+    height: 39px;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    background: #FFF;
+    color: var(--unnamed, #393E46);
+    font-family: Noto Sans KR;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: 0.75px;
+    text-align: center;
+    padding-left: 10px;
+    cursor: pointer;
+}
+.dropdown_list:hover {
+    background-color: #F3F4F8;
+}
+.hidden {
+    display: none;
 }
 .searchinput-posts {
     display: flex;

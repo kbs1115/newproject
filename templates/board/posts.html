@@ -8,7 +8,7 @@
 {% block content %}
 <div class="container">
     <div class="sidebar">
-        <div class="sidebar-menu active"><a>질문과 답변</a></div>
+        <div class="sidebar-menu"><a>질문과 답변</a></div>
         <div class="sidebar-menu"><a>자료게시판</a></div>
         <div class="sidebar-menu"><a>자유게시판</a></div>
         <div class="sidebar-menu"><a>내가 쓴 게시글</a></div>
@@ -20,24 +20,46 @@
             <button class="write">글쓰기</button>
         </div>
         <div class="tabmenu">
-            <div class="tabmenu-item active"><a href="">국어</a></div>
+            <div class="tabmenu-item"><a href="">국어</a></div>
             <div class="tabmenu-item"><a href="">수학</a></div>
             <div class="tabmenu-item"><a href="">영어</a></div>
             <div class="tabmenu-item"><a href="">탐구</a></div>
         </div>
         <div class="orderAndSearch">
-            <div class="createdate"><a href="">최신순</a></div>
-            <div class="recommend"><a href="">추천순</a></div>
+            <div class="order"><a href="">최신순</a></div>
+            <div class="order"><a href="">추천순</a></div>
             <div class="searchbar-posts">
                 <div class="dropdown">
-                    <button class="dropbtn">
-
+                    <button class="dropbtn" id="dropbtn">
+                        {% if detail == 'all' %}
+                        <div>전체</div>
+                        {% elif detail == 'subject' %}
+                        <div>제목</div>
+                        {% elif detail == 'content' %}
+                        <div>내용</div>
+                        {% elif detail == 'user' %}
+                        <div>글쓴이</div>
+                        {% elif detail == 'subAndContent' %}
+                        <div>제목+내용</div>
+                        {% endif %}
+                        <img src="/static/img/dropdownicon.png" alt="">
                     </button>
+                    <ul class="hidden">
+                        <li class="dropdown_list"><a href="javascript:void(0)">전체</a></li>
+                        <li class="dropdown_list"><a href="javascript:void(0)">제목</a></li>
+                        <li class="dropdown_list"><a href="javascript:void(0)">내용</a></li>
+                        <li class="dropdown_list"><a href="javascript:void(0)">글쓴이</a></li>
+                        <li class="dropdown_list"><a href="javascript:void(0)">제목+내용</a></li>
+                    </ul>
                 </div>
                 <div class="searchinput-posts">
                     <input type="text" id="search_kw_posts" value="{{ kw_posts|default_if_none:'' }}">
                     <button type="button" id="btn_search_posts"><img src="/static/img/nav-search-icon.png" alt="search"></button>
                 </div>
+                <form id="searchForm_posts" method="get" action="{% url 'board:posts' category %}">
+                    <input type="hidden" id="kw_posts" name="kw_posts" value="{{ kw_posts|default_if_none:'' }}">
+                    <input type="hidden" id="detail" name="detail" value="{{ detail|default_if_none:'all' }}">
+                </form>
             </div>
         </div>
         <table>
@@ -72,4 +94,85 @@
         </table>
     </div>
 </div>
+<!-- 탭메뉴 active 조정 -->
+<script type='text/javascript'>
+// 현재 URL 가져오기
+const currentUrl = window.location.href;
+
+// URL에서 마지막 부분 추출
+const parts = currentUrl.split('/');
+const lastPart = Number(parts[parts.length - 2]);
+
+//십의 자리와 1의 자리, querystring 값으로 어떤 태그에 active를 부여할지 결정
+const whatCategory = Math.floor(lastPart / 10);
+const whatSubject = lastPart % 10;
+const sortOrder = new URLSearchParams(location.search).get('sort');
+
+//active 속성 부여
+const sidebars = document.getElementsByClassName('sidebar-menu');
+if(whatCategory === 1){
+    sidebars[0].classList.add('active');
+}
+else if(whatCategory === 2){
+    sidebars[2].classList.add('active');
+}
+else if(whatCategory === 3){
+    sidebars[1].classList.add('active');
+}
+
+const subjects = document.getElementsByClassName('tabmenu-item');
+if(whatSubject > 0 && whatSubject < 5)
+    subjects[whatSubject - 1].classList.add('active');
+
+const orders = document.getElementsByClassName('order');
+if(sortOrder === 'voter_count'){
+    orders[1].classList.add('active');
+}
+else {
+    orders[0].classList.add('active');
+}
+</script>
+<!-- posts 검색 기능 -->
+<script type='text/javascript'>
+    const btn_search_posts = document.getElementById("btn_search_posts");
+    btn_search_posts.addEventListener('click', function() {
+      document.getElementById('kw_posts').value = document.getElementById('search_kw_posts').value;
+      document.getElementById('searchForm_posts').submit();
+  });
+</script>
+<!-- dropdown 구현 -->
+<script>
+const dropdownButton = document.getElementById('dropbtn');
+const dropdownButtonText = document.querySelector('#dropbtn div');
+const dropdownMenu = document.querySelectorAll('.dropdown ul');
+
+//dropbtn 클릭 시, dropdown 메뉴가 드러남.
+dropdownButton.addEventListener('click', () => {
+    dropdownMenu[0].classList.toggle('hidden');
+});
+
+//각 메뉴 클릭 시 dropdownMenu가 사라지고, 텍스트가 바뀌도록 함. all , subject ,content, user, subAndContent
+const dropdownItems = document.querySelectorAll('.dropdown_list a');
+dropdownItems.forEach(item => {
+    item.addEventListener('click', () => {
+        dropdownButtonText.textContent = item.textContent;
+        dropdownMenu[0].classList.toggle('hidden');
+        if(item.textContent === "전체"){
+            document.getElementById('detail').value = 'all';
+        }
+        else if(item.textContent === "제목"){
+            document.getElementById('detail').value = 'subject';
+        }
+        else if(item.textContent === "내용"){
+            document.getElementById('detail').value = 'content';
+        }
+        else if(item.textContent === "글쓴이"){
+            document.getElementById('detail').value = 'user';
+        }
+        else if(item.textContent === "제목+내용"){
+            document.getElementById('detail').value = 'subAndContent';
+        }
+    });
+});
+</script>
 {% endblock %}
