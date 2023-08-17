@@ -3,7 +3,7 @@ from django.contrib.auth.hashers import make_password
 from django.test import TestCase, Client
 from django.urls import reverse
 from .forms import CommentForm
-from .models import Post, Comment, Media
+from .models import Post, Comment, Media, LecturesLink
 from users.models import User
 from django.utils import timezone
 from django.utils.datastructures import MultiValueDict
@@ -229,16 +229,14 @@ class IndexViewTest(TestCase):
         question_math = len(response.context['question_math'])
         question_english = len(response.context['question_english'])
         question_etc = len(response.context['question_etc'])
-        free_board = len(response.context['free_board'])
         best_voter = len(response.context['best_voter'])
 
-        self.assertEqual(notice, 10)
+        self.assertEqual(notice, 5)
         self.assertEqual(question_korean, 5)
         self.assertEqual(question_math, 5)
         self.assertEqual(question_english, 5)
         self.assertEqual(question_etc, 5)
-        self.assertEqual(free_board, 10)
-        self.assertEqual(best_voter, 10)
+        self.assertEqual(best_voter, 5)
 
 
 class PostViewTest(TestCase):
@@ -904,3 +902,53 @@ class VoteCommentTest(TestCase):
         comment = Comment.objects.get(pk=1)
         self.assertEqual(comment.voter.all().count(), 1)
         self.assertRedirects(response, reverse('board:post_detail', args=[comment.post.id]), status_code=302)
+
+
+class LecturesTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        LecturesLink.objects.create(category=1, teacher=1, detail="호주머니문법1",
+                                    url='https://www.google.com/search?q=url&oq=url&aqs=chrome..69i57j0i131i433i512l2j0i433i512j0i131i433i512j69i60j69i61l2.1098j0j7&sourceid=chrome&ie=UTF-8')
+        LecturesLink.objects.create(category=2, teacher=1, detail="최강수학")
+        LecturesLink.objects.create(category=1, teacher=1, detail="호주머니문법2",
+                                    url='https://github.com/kbs1115/newproject/tree/gym/templates/board')
+        LecturesLink.objects.create(category=1, teacher=2, detail="최강국어")
+        LecturesLink.objects.create(category=3, teacher=2, detail="최강영어")
+        LecturesLink.objects.create(category=3, teacher=1, detail="호주머니어법")
+
+    def setUp(self):
+        client = Client()
+
+    def test_CheckDataCreate(self):
+        # db 에 잘 생성되어있는지! 이거는 client에서 넣을 일이 없음
+
+        # category와 teacher_id 로만 서치
+        data1 = LecturesLink.objects.filter(category=1, teacher=1)
+        data2 = LecturesLink.objects.filter(category=1, teacher=2)
+        data3 = LecturesLink.objects.filter(category=2, teacher=1)
+        self.assertEqual(data1.count(), 2)
+        self.assertEqual(data2.count(), 1)
+        self.assertEqual(data3.count(), 1)
+
+        # detail 을 추가해서 서치
+        data4 = LecturesLink.objects.filter(category=1, teacher=1, detail="호주머니문법1")
+        data5 = LecturesLink.objects.filter(category=1, teacher=1, detail="호주머니문법2")
+        self.assertEqual(data4.count(), 1)
+        self.assertEqual(data5.count(), 1)
+
+    def test_IsRightContext(self):
+        response = self.client.get(reverse('board:lectures', args=[3, 1]))
+        cnt = response.context['lectures'].count()
+        self.assertEqual(cnt, 1)
+
+        response = self.client.get(reverse('board:lectures', args=[1, 1]))
+        cnt = response.context['lectures'].count()
+        self.assertEqual(cnt, 2)
+
+        response = self.client.get(reverse('board:lectures', args=[1, 1]))
+        self.assertEqual(response.context['lectures'][1].url,
+                         'https://www.google.com/search?q=url&oq=url&aqs=chrome..69i57j0i131i433i512l2j0i433i512j0i131i433i512j69i60j69i61l2.1098j0j7&sourceid=chrome&ie=UTF-8')
+
+        response = self.client.get(reverse('board:lectures', args=[1, 1]))
+        self.assertEqual(response.context['lectures'][0].url,
+                         'https://github.com/kbs1115/newproject/tree/gym/templates/board')

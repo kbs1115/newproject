@@ -58,3 +58,12 @@ class Media(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='post_media', blank=True, null=True)
     comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='comment_media', blank=True, null=True)
     file = models.FileField(upload_to='board/', null=True, blank=True)
+
+
+# 08.17 선생님강의 테이블 추가 ->이 테이블에 해당하는 데이터들은 직접 밀어넣어줘야함
+# 국어 1 수학2 영어3
+class LecturesLink(models.Model):
+    url = models.URLField()
+    category = models.SmallIntegerField()
+    teacher = models.SmallIntegerField()
+    detail = models.TextField(null=True, blank=True)

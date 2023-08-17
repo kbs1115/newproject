@@ -9,20 +9,21 @@ def index(request):
     question_math = Post.objects.filter(category='12').order_by('-create_date')
     question_english = Post.objects.filter(category='13').order_by('-create_date')
     question_etc = Post.objects.filter(category='14').order_by('-create_date')
-    free = Post.objects.filter(category='20').order_by('-create_date')
+    # free = Post.objects.filter(category='20').order_by('-create_date')
     best_voter = Post.objects.exclude(category='40')
     best_voter = best_voter.annotate(voter_cnt=Count('voter')).order_by('-voter_cnt')
 
-    notice = notice[:10]
+    notice = notice[:5]
     question_korean = question_korean[:5]
     question_math = question_math[:5]
     question_english = question_english[:5]
     question_etc = question_etc[:5]
-    free = free[:10]
-    best_voter = best_voter[:10]
+    # free = free[:10]
+    best_voter = best_voter[:5]
 
+    # 여기 강의 부분 추가해야함.
     context = {'notice_board': notice, 'question_korean': question_korean, 'question_math': question_math,
-               'question_english': question_english, 'question_etc': question_etc, 'free_board': free,
+               'question_english': question_english, 'question_etc': question_etc,
                'best_voter': best_voter}
     return render(request, 'board/index.html', context)
 
@@ -45,6 +46,3 @@ def nav_search(request):
 
     context = {'free_list': target_list[0], 'data_list': target_list[1], 'question_list': target_list[2], 'kw': kw}
     return render(request, 'board/search_list.html', context)
-
-
-
