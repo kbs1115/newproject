@@ -8,9 +8,9 @@
 {% block content %}
 <div class="container">
     <div class="sidebar">
-        <div class="sidebar-menu"><a>질문과 답변</a></div>
-        <div class="sidebar-menu"><a>자료게시판</a></div>
-        <div class="sidebar-menu"><a>자유게시판</a></div>
+        <div class="sidebar-menu"><a href="{% url 'board:posts' 11 %}">질문과 답변</a></div>
+        <div class="sidebar-menu"><a href="{% url 'board:posts' 31 %}">자료게시판</a></div>
+        <div class="sidebar-menu"><a href="{% url 'board:posts' 20 %}">자유게시판</a></div>
         <div class="sidebar-menu"><a>내가 쓴 게시글</a></div>
         <div class="sidebar-menu"><a>글쓰기<img src="/static/img/writeicon.png" alt=""></a></div>
     </div>
@@ -20,14 +20,14 @@
             <button class="write">글쓰기</button>
         </div>
         <div class="tabmenu">
-            <div class="tabmenu-item"><a href="">국어</a></div>
-            <div class="tabmenu-item"><a href="">수학</a></div>
-            <div class="tabmenu-item"><a href="">영어</a></div>
-            <div class="tabmenu-item"><a href="">탐구</a></div>
+            <div class="tabmenu-item"><a href="{% url 'board:posts' quotient|add:1 %}">국어</a></div>
+            <div class="tabmenu-item"><a href="{% url 'board:posts' quotient|add:2 %}">수학</a></div>
+            <div class="tabmenu-item"><a href="{% url 'board:posts' quotient|add:3 %}">영어</a></div>
+            <div class="tabmenu-item"><a href="{% url 'board:posts' quotient|add:4 %}">탐구</a></div>
         </div>
         <div class="orderAndSearch">
-            <div class="order"><a href="">최신순</a></div>
-            <div class="order"><a href="">추천순</a></div>
+            <div class="order"><a id="sortButton_update" href="javascript:void(0)">최신순</a></div>
+            <div class="order"><a id="sortButton_voter" href="javascript:void(0)">추천순</a></div>
             <div class="searchbar-posts">
                 <div class="dropdown">
                     <button class="dropbtn" id="dropbtn">
@@ -56,9 +56,14 @@
                     <input type="text" id="search_kw_posts" value="{{ kw_posts|default_if_none:'' }}">
                     <button type="button" id="btn_search_posts"><img src="/static/img/nav-search-icon.png" alt="search"></button>
                 </div>
+                <!-- 검색에 대한 form -->
                 <form id="searchForm_posts" method="get" action="{% url 'board:posts' category %}">
                     <input type="hidden" id="kw_posts" name="kw_posts" value="{{ kw_posts|default_if_none:'' }}">
                     <input type="hidden" id="detail" name="detail" value="{{ detail|default_if_none:'all' }}">
+                </form>
+                <!-- 정렬 순서를 조정하는 form -->
+                <form id="sortForm" method="get" action="{% url 'board:posts' category %}">
+                    <input type="hidden" id="sort" name="sort" value="{{ kw_posts|default_if_none:'update' }}">
                 </form>
             </div>
         </div>
@@ -70,27 +75,45 @@
                 <th class="table-date">등록일</th>
                 <th class="table-recommend">추천</th>
             </tr>
+            {% for item in post %}
             <tr>
-                <td class="table-number">1</td>
-                <td class="table-name"><a href="">질문글 예시 1</a></td>
-                <td class="table-author">윤규민</td>
-                <td class="table-date">2020-08-12</td>
-                <td class="table-recommend">13</td>
+                <td class="table-number">{{ forloop.counter }}</td>
+                <td class="table-name"><a href="">{{ item.subject }}</a></td>
+                <td class="table-author">{{ item.user }}</td>
+                <td class="table-date">{{ item.create_date|date:"Y-m-d" }}</td>
+                <td class="table-recommend">{{ item.user_set.count }}</td>
+            </tr>
+            {% endfor %}
+            <tr class="row-paging">
+                <td>
+                    {% if post.has_previous %}
+                    <a href="?page={{ post.previous_page_number }}"><img src="/static/img/right-arrow-1.png" alt=""></a>
+                    {% else %}
+                    <a href="#"><img src="/static/img/right-arrow-1.png" alt=""></a>
+                    {% endif %}
+                    {% for page_number in post.paginator.page_range %}
+                    {% if page_number >= post.number|add:-3 and page_number <= post.number|add:3 %}
+                    {% if page_number == post.number %}
+                    <div class="page-item page-active">
+                        <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a>
+                    </div>
+                    {% else %}
+                    <div class="page-item">
+                        <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a>
+                    </div>
+                    {% endif %}
+                    {% endif %}
+                    {% endfor %}
+                    {% if post.has_next %}
+                    <a href="?page={{ post.next_page_number }}"><img src="/static/img/right-arrow-2.png" alt=""></a>
+                    {% else %}
+                    <a href="#"><img src="/static/img/right-arrow-2.png" alt=""></a>
+                    {% endif %}
+                </td>
             </tr>
             <tr>
-                <td class="table-number">1</td>
-                <td class="table-name"><a href="">질문글 예시 2</a></td>
-                <td class="table-author">윤규민</td>
-                <td class="table-date">2020-08-12</td>
-                <td class="table-recommend">13</td>
+                <td><button class="write">글쓰기</button></td>
             </tr>
-            <tr></tr>
-            <tr></tr>
-            <tr></tr>
-            <tr></tr>
-            <tr></tr>
-            <tr></tr>
-            <tr></tr>
         </table>
     </div>
 </div>
@@ -174,5 +197,18 @@ dropdownItems.forEach(item => {
         }
     });
 });
+</script>
+<!-- sort 구현 -->
+<script type='text/javascript'>
+    const sortButton_update = document.getElementById("sortButton_update");
+    const sortButton_voter = document.getElementById("sortButton_voter");
+    sortButton_update.addEventListener('click', function() {
+      document.getElementById('sort').value = 'update';
+      document.getElementById('sortForm').submit();
+    });
+    sortButton_voter.addEventListener('click', function() {
+      document.getElementById('sort').value = 'voter_count';
+      document.getElementById('sortForm').submit();
+    });
 </script>
 {% endblock %}

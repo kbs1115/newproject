@@ -11,123 +11,43 @@
 		<div class="post_subject">
 			<div class="subject_innerbox">베스트 추천글<a href=""></a></div>
 		</div>
+		{% for post in best_voter %}
 		<div class="posts">
-			<div class="post_textbox"><a href="">예시 글 1입니다.</a></div>
+			<div class="post_textbox"><a href="">{{ post.subject }}</a></div>
 			<div class="post_infobox">
-				<div class="authorbox">윤규민</div>
-				<div class="datebox">2023-08-02</div>
+				<div class="authorbox">{{ post.user }}</div>
+				<div class="datebox">{{ post.create_date|date:"Y-m-d" }}</div>
 			</div>
 		</div>
-		<div class="posts">
-			<div class="post_textbox"><a href="">예시 글 2입니다.</a></div>
-			<div class="post_infobox">
-				<div class="authorbox">윤규민</div>
-				<div class="datebox">2023-08-02</div>
-			</div>
-		</div>
-		<div class="posts">
-			<div class="post_textbox"><a href="">예시 글 3입니다.</a></div>
-			<div class="post_infobox">
-				<div class="authorbox">윤규민</div>
-				<div class="datebox">2023-08-02</div>
-			</div>
-		</div>
-		<div class="posts">
-			<div class="post_textbox">
-				<a href="">예시 글 긴거긴거긴거긴거긴거긴거긴거</a>
-			</div>
-			<div class="post_infobox">
-				<div class="authorbox">윤규민</div>
-				<div class="datebox">2023-08-02</div>
-			</div>
-		</div>
-		<div class="posts">
-			<div class="post_textbox"><a href="">예시 글 4니다.</a></div>
-			<div class="post_infobox">
-				<div class="authorbox">윤규민</div>
-				<div class="datebox">2023-08-02</div>
-			</div>
-		</div>
+		{% endfor %}
 	</div>
 	<div class="post_box">
 		<div class="post_subject">
-			<div class="subject_innerbox">공지사항<a href=""></a></div>
+			<div class="subject_innerbox">공지사항<a href="{% url 'board:posts' 40 %}"></a></div>
 		</div>
+		{% for post in notice_board %}
 		<div class="posts">
-			<div class="post_textbox"><a href="">예시 글 4니다.</a></div>
+			<div class="post_textbox"><a href="">{{ post.subject }}</a></div>
 			<div class="post_infobox">
-				<div class="authorbox">윤규민</div>
-				<div class="datebox">2023-08-02</div>
+				<div class="authorbox">{{ post.user }}</div>
+				<div class="datebox">{{ post.create_date|date:"Y-m-d" }}</div>
 			</div>
 		</div>
-		<div class="posts">
-			<div class="post_textbox"><a href="">예시 글 4니다.</a></div>
-			<div class="post_infobox">
-				<div class="authorbox">윤규민</div>
-				<div class="datebox">2023-08-02</div>
-			</div>
-		</div>
-		<div class="posts">
-			<div class="post_textbox"><a href="">예시 글 4니다.</a></div>
-			<div class="post_infobox">
-				<div class="authorbox">윤규민</div>
-				<div class="datebox">2023-08-02</div>
-			</div>
-		</div>
-		<div class="posts">
-			<div class="post_textbox"><a href="">예시 글 4니다.</a></div>
-			<div class="post_infobox">
-				<div class="authorbox">윤규민</div>
-				<div class="datebox">2023-08-02</div>
-			</div>
-		</div>
-		<div class="posts">
-			<div class="post_textbox"><a href="">예시 글 4니다.</a></div>
-			<div class="post_infobox">
-				<div class="authorbox">윤규민</div>
-				<div class="datebox">2023-08-02</div>
-			</div>
-		</div>
+		{% endfor %}
 	</div>
 	<div class="post_box">
 		<div class="post_subject">
-			<div class="subject_innerbox">자료게시판<a href=""></a></div>
+			<div class="subject_innerbox">자유게시판<a href="{% url 'board:posts' 20 %}"></a></div>
 		</div>
+		{% for post in free_board %}
 		<div class="posts">
-			<div class="post_textbox"><a href="">예시 글 4니다.</a></div>
+			<div class="post_textbox"><a href="">{{ post.subject }}</a></div>
 			<div class="post_infobox">
-				<div class="authorbox">윤규민</div>
-				<div class="datebox">2023-08-02</div>
+				<div class="authorbox">{{ post.user }}</div>
+				<div class="datebox">{{ post.create_date|date:"Y-m-d" }}</div>
 			</div>
 		</div>
-		<div class="posts">
-			<div class="post_textbox"><a href="">예시 글 4니다.</a></div>
-			<div class="post_infobox">
-				<div class="authorbox">윤규민</div>
-				<div class="datebox">2023-08-02</div>
-			</div>
-		</div>
-		<div class="posts">
-			<div class="post_textbox"><a href="">예시 글 4니다.</a></div>
-			<div class="post_infobox">
-				<div class="authorbox">윤규민</div>
-				<div class="datebox">2023-08-02</div>
-			</div>
-		</div>
-		<div class="posts">
-			<div class="post_textbox"><a href="">예시 글 4니다.</a></div>
-			<div class="post_infobox">
-				<div class="authorbox">윤규민</div>
-				<div class="datebox">2023-08-02</div>
-			</div>
-		</div>
-		<div class="posts">
-			<div class="post_textbox"><a href="">예시 글 4니다.</a></div>
-			<div class="post_infobox">
-				<div class="authorbox">윤규민</div>
-				<div class="datebox">2023-08-02</div>
-			</div>
-		</div>
+		{% endfor %}
 	</div>
 </div>
 <div class="container">
@@ -141,45 +61,49 @@
 	</div>
 	<div class="subject_postbox">
 		<div class="tab-content current" id="korean">
+			{% for post in question_korean %}
 			<div class="tab_posts">
-				<div class="post_textbox"><a href="">예시 글 1입니다.</a></div>
+				<div class="post_textbox"><a href="">{{ post.subject }}</a></div>
 				<div class="post_infobox">
-					<div class="authorbox">윤규민</div>
-					<div class="datebox">2023-08-02</div>
+					<div class="authorbox">{{ post.user }}</div>
+					<div class="datebox">{{ post.create_date|date:"Y-m-d" }}</div>
 				</div>
 			</div>
-			<div class="tab_posts">
-				<div class="post_textbox"><a href="">예시 글 1입니다.</a></div>
-				<div class="post_infobox">
-					<div class="authorbox">윤규민</div>
-					<div class="datebox">2023-08-02</div>
-				</div>
-			</div>
-			<div class="tab_posts">
-				<div class="post_textbox"><a href="">예시 글 1입니다.</a></div>
-				<div class="post_infobox">
-					<div class="authorbox">윤규민</div>
-					<div class="datebox">2023-08-02</div>
-				</div>
-			</div>
-			<div class="tab_posts">
-				<div class="post_textbox"><a href="">예시 글 1입니다.</a></div>
-				<div class="post_infobox">
-					<div class="authorbox">윤규민</div>
-					<div class="datebox">2023-08-02</div>
-				</div>
-			</div>
-			<div class="tab_posts">
-				<div class="post_textbox"><a href="">예시 글 1입니다.</a></div>
-				<div class="post_infobox">
-					<div class="authorbox">윤규민</div>
-					<div class="datebox">2023-08-02</div>
-				</div>
-			</div>
+			{% endfor %}
 		</div>
-		<div class="tab-content" id="math">수</div>
-		<div class="tab-content" id="english">영</div>
-		<div class="tab-content" id="etc">탐</div>
+		<div class="tab-content" id="math">
+			{% for post in question_math %}
+			<div class="tab_posts">
+				<div class="post_textbox"><a href="">{{ post.subject }}</a></div>
+				<div class="post_infobox">
+					<div class="authorbox">{{ post.user }}</div>
+					<div class="datebox">{{ post.create_date|date:"Y-m-d" }}</div>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+		<div class="tab-content" id="english">
+			{% for post in question_english %}
+			<div class="tab_posts">
+				<div class="post_textbox"><a href="">{{ post.subject }}</a></div>
+				<div class="post_infobox">
+					<div class="authorbox">{{ post.user }}</div>
+					<div class="datebox">{{ post.create_date|date:"Y-m-d" }}</div>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+		<div class="tab-content" id="etc">
+			{% for post in question_etc %}
+			<div class="tab_posts">
+				<div class="post_textbox"><a href="">{{ post.subject }}</a></div>
+				<div class="post_infobox">
+					<div class="authorbox">{{ post.user }}</div>
+					<div class="datebox">{{ post.create_date|date:"Y-m-d" }}</div>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
 	</div>
 	<div class="menubox">
 		<a class="menus" href="">질문하기</a>

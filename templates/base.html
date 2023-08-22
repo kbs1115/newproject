@@ -27,10 +27,10 @@
   </div>
   <div class="nav-underinnerbox">
     <ul>
-      <li><a href="">질문게시판</a></li>
-      <li><a href="">자료게시판</a></li>
-      <li><a href="">자유게시판</a></li>
-      <li><a href="">공지사항</a></li>
+      <li><a href="{% url 'board:posts' 11 %}">질문게시판</a></li>
+      <li><a href="{% url 'board:posts' 31 %}">자료게시판</a></li>
+      <li><a href="{% url 'board:posts' 20 %}">자유게시판</a></li>
+      <li><a href="{% url 'board:posts' 40 %}">공지사항</a></li>
       <li><a href="">선생님강의</a></li>
       <li>
         <input type="text" id="search_kw" value="{{ kw|default_if_none:'' }}">
