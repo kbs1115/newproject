@@ -16,7 +16,15 @@
     </div>
     <div class="mainarea">
         <div class="upperarea">
+            {% if quotient == 10 %}
             <div class="postsname">질문게시판</div>
+            {% elif quotient == 30 %}
+            <div class="postsname">자료게시판</div>
+            {% elif quotient == 20 %}
+            <div class="postsname">자유게시판</div>
+            {% else %}
+            <div class="postsname">공지사항</div>
+            {% endif %}
             <button class="write">글쓰기</button>
         </div>
         <div class="tabmenu">
