@@ -18,7 +18,6 @@ def index(request):
     question_math = question_math[:5]
     question_english = question_english[:5]
     question_etc = question_etc[:5]
-    free = free[:5]
     best_voter = best_voter[:5]
 
     context = {
@@ -27,7 +26,6 @@ def index(request):
         "question_math": question_math,
         "question_english": question_english,
         "question_etc": question_etc,
-        "free_board": free,
         "best_voter": best_voter,
     }
     return render(request, "board/index.html", context)
@@ -57,6 +55,7 @@ def nav_search(request):
         )
         target_list[i] = target_list[i][:5]
 
+
     context = {
         "free_list": target_list[0],
         "data_list": target_list[1],
@@ -64,3 +63,4 @@ def nav_search(request):
         "kw": kw,
     }
     return render(request, "board/search_list.html", context)
+

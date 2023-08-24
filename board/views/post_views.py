@@ -5,8 +5,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.utils import timezone
 from board.forms import PostForm, CommentForm
-from board.models import Post, Media, Comment
-from django.utils.datastructures import MultiValueDict
+from board.models import Post, Media
+from common.models import Notification, Data
 
 
 def posts(request, category: int):
@@ -148,4 +148,10 @@ def post_vote(request, post_id):
         messages.error(request, "본인이 작성한 글은 추천할 수 없습니다.")
     else:
         post.voter.add(request.user)
+
+        data = Data.objects.create(sent_user=request.user, post=post, notice_type="vote_of_post")
+        data.save()
+        notification = Notification.objects.create(received_user=post.user, create_date=timezone.now(), data=data)
+        notification.save()
     return redirect("board:post_detail", post_id=post.id)
+

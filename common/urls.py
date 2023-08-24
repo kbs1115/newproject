@@ -10,4 +10,5 @@ urlpatterns = [
     path('signup/', views.signup, name='signup'),
     path('mypage/', views.mypage, name='mypage'),
     path('update/', views.mypage_modify, name='update'),
+    path('notifications/', views.notifications, name='notifications')
 ]
