@@ -1,10 +1,222 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'base.html' %}
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+  {% load static %}
+  {% block extrahead %}
+  <link rel="stylesheet" href="{% static 'posts.css' %}">
+  {% endblock %}
 </head>
-<body>
+{% block content %}
+<div class="container">
+    <div class="sidebar">
+        <div class="sidebar-menu"><a href="{% url 'board:posts' 11 %}">질문과 답변</a></div>
+        <div class="sidebar-menu"><a href="{% url 'board:posts' 31 %}">자료게시판</a></div>
+        <div class="sidebar-menu"><a href="{% url 'board:posts' 20 %}">자유게시판</a></div>
+        <div class="sidebar-menu"><a>내가 쓴 게시글</a></div>
+        <div class="sidebar-menu"><a>글쓰기<img src="/static/img/writeicon.png" alt=""></a></div>
+    </div>
+    <div class="mainarea">
+        <div class="upperarea">
+            {% if quotient == 10 %}
+            <div class="postsname">질문게시판</div>
+            {% elif quotient == 30 %}
+            <div class="postsname">자료게시판</div>
+            {% elif quotient == 20 %}
+            <div class="postsname">자유게시판</div>
+            {% else %}
+            <div class="postsname">공지사항</div>
+            {% endif %}
+            <button class="write">글쓰기</button>
+        </div>
+        <div class="tabmenu">
+            <div class="tabmenu-item"><a href="{% url 'board:posts' quotient|add:1 %}">국어</a></div>
+            <div class="tabmenu-item"><a href="{% url 'board:posts' quotient|add:2 %}">수학</a></div>
+            <div class="tabmenu-item"><a href="{% url 'board:posts' quotient|add:3 %}">영어</a></div>
+            <div class="tabmenu-item"><a href="{% url 'board:posts' quotient|add:4 %}">탐구</a></div>
+        </div>
+        <div class="orderAndSearch">
+            <div class="order"><a id="sortButton_update" href="javascript:void(0)">최신순</a></div>
+            <div class="order"><a id="sortButton_voter" href="javascript:void(0)">추천순</a></div>
+            <div class="searchbar-posts">
+                <div class="dropdown">
+                    <button class="dropbtn" id="dropbtn">
+                        {% if detail == 'all' %}
+                        <div>전체</div>
+                        {% elif detail == 'subject' %}
+                        <div>제목</div>
+                        {% elif detail == 'content' %}
+                        <div>내용</div>
+                        {% elif detail == 'user' %}
+                        <div>글쓴이</div>
+                        {% elif detail == 'subAndContent' %}
+                        <div>제목+내용</div>
+                        {% endif %}
+                        <img src="/static/img/dropdownicon.png" alt="">
+                    </button>
+                    <ul class="hidden">
+                        <li class="dropdown_list"><a href="javascript:void(0)">전체</a></li>
+                        <li class="dropdown_list"><a href="javascript:void(0)">제목</a></li>
+                        <li class="dropdown_list"><a href="javascript:void(0)">내용</a></li>
+                        <li class="dropdown_list"><a href="javascript:void(0)">글쓴이</a></li>
+                        <li class="dropdown_list"><a href="javascript:void(0)">제목+내용</a></li>
+                    </ul>
+                </div>
+                <div class="searchinput-posts">
+                    <input type="text" id="search_kw_posts" value="{{ kw_posts|default_if_none:'' }}">
+                    <button type="button" id="btn_search_posts"><img src="/static/img/nav-search-icon.png" alt="search"></button>
+                </div>
+                <!-- 검색에 대한 form -->
+                <form id="searchForm_posts" method="get" action="{% url 'board:posts' category %}">
+                    <input type="hidden" id="kw_posts" name="kw_posts" value="{{ kw_posts|default_if_none:'' }}">
+                    <input type="hidden" id="detail" name="detail" value="{{ detail|default_if_none:'all' }}">
+                </form>
+                <!-- 정렬 순서를 조정하는 form -->
+                <form id="sortForm" method="get" action="{% url 'board:posts' category %}">
+                    <input type="hidden" id="sort" name="sort" value="{{ kw_posts|default_if_none:'update' }}">
+                </form>
+            </div>
+        </div>
+        <table>
+            <tr>
+                <th class="table-number">번호</th>
+                <th class="table-name">제목</th>
+                <th class="table-author">글쓴이</th>
+                <th class="table-date">등록일</th>
+                <th class="table-recommend">추천</th>
+            </tr>
+            {% for item in post %}
+            <tr>
+                <td class="table-number">{{ forloop.counter }}</td>
+                <td class="table-name"><a href="">{{ item.subject }}</a></td>
+                <td class="table-author">{{ item.user }}</td>
+                <td class="table-date">{{ item.create_date|date:"Y-m-d" }}</td>
+                <td class="table-recommend">{{ item.user_set.count }}</td>
+            </tr>
+            {% endfor %}
+            <tr class="row-paging">
+                <td>
+                    {% if post.has_previous %}
+                    <a href="?page={{ post.previous_page_number }}"><img src="/static/img/right-arrow-1.png" alt=""></a>
+                    {% else %}
+                    <a href="#"><img src="/static/img/right-arrow-1.png" alt=""></a>
+                    {% endif %}
+                    {% for page_number in post.paginator.page_range %}
+                    {% if page_number >= post.number|add:-3 and page_number <= post.number|add:3 %}
+                    {% if page_number == post.number %}
+                    <div class="page-item page-active">
+                        <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a>
+                    </div>
+                    {% else %}
+                    <div class="page-item">
+                        <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a>
+                    </div>
+                    {% endif %}
+                    {% endif %}
+                    {% endfor %}
+                    {% if post.has_next %}
+                    <a href="?page={{ post.next_page_number }}"><img src="/static/img/right-arrow-2.png" alt=""></a>
+                    {% else %}
+                    <a href="#"><img src="/static/img/right-arrow-2.png" alt=""></a>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td><button class="write">글쓰기</button></td>
+            </tr>
+        </table>
+    </div>
+</div>
+<!-- 탭메뉴 active 조정 -->
+<script type='text/javascript'>
+// 현재 URL 가져오기
+const currentUrl = window.location.href;
 
-</body>
-</html>
+// URL에서 마지막 부분 추출
+const parts = currentUrl.split('/');
+const lastPart = Number(parts[parts.length - 2]);
+
+//십의 자리와 1의 자리, querystring 값으로 어떤 태그에 active를 부여할지 결정
+const whatCategory = Math.floor(lastPart / 10);
+const whatSubject = lastPart % 10;
+const sortOrder = new URLSearchParams(location.search).get('sort');
+
+//active 속성 부여
+const sidebars = document.getElementsByClassName('sidebar-menu');
+if(whatCategory === 1){
+    sidebars[0].classList.add('active');
+}
+else if(whatCategory === 2){
+    sidebars[2].classList.add('active');
+}
+else if(whatCategory === 3){
+    sidebars[1].classList.add('active');
+}
+
+const subjects = document.getElementsByClassName('tabmenu-item');
+if(whatSubject > 0 && whatSubject < 5)
+    subjects[whatSubject - 1].classList.add('active');
+
+const orders = document.getElementsByClassName('order');
+if(sortOrder === 'voter_count'){
+    orders[1].classList.add('active');
+}
+else {
+    orders[0].classList.add('active');
+}
+</script>
+<!-- posts 검색 기능 -->
+<script type='text/javascript'>
+    const btn_search_posts = document.getElementById("btn_search_posts");
+    btn_search_posts.addEventListener('click', function() {
+      document.getElementById('kw_posts').value = document.getElementById('search_kw_posts').value;
+      document.getElementById('searchForm_posts').submit();
+  });
+</script>
+<!-- dropdown 구현 -->
+<script>
+const dropdownButton = document.getElementById('dropbtn');
+const dropdownButtonText = document.querySelector('#dropbtn div');
+const dropdownMenu = document.querySelectorAll('.dropdown ul');
+
+//dropbtn 클릭 시, dropdown 메뉴가 드러남.
+dropdownButton.addEventListener('click', () => {
+    dropdownMenu[0].classList.toggle('hidden');
+});
+
+//각 메뉴 클릭 시 dropdownMenu가 사라지고, 텍스트가 바뀌도록 함. all , subject ,content, user, subAndContent
+const dropdownItems = document.querySelectorAll('.dropdown_list a');
+dropdownItems.forEach(item => {
+    item.addEventListener('click', () => {
+        dropdownButtonText.textContent = item.textContent;
+        dropdownMenu[0].classList.toggle('hidden');
+        if(item.textContent === "전체"){
+            document.getElementById('detail').value = 'all';
+        }
+        else if(item.textContent === "제목"){
+            document.getElementById('detail').value = 'subject';
+        }
+        else if(item.textContent === "내용"){
+            document.getElementById('detail').value = 'content';
+        }
+        else if(item.textContent === "글쓴이"){
+            document.getElementById('detail').value = 'user';
+        }
+        else if(item.textContent === "제목+내용"){
+            document.getElementById('detail').value = 'subAndContent';
+        }
+    });
+});
+</script>
+<!-- sort 구현 -->
+<script type='text/javascript'>
+    const sortButton_update = document.getElementById("sortButton_update");
+    const sortButton_voter = document.getElementById("sortButton_voter");
+    sortButton_update.addEventListener('click', function() {
+      document.getElementById('sort').value = 'update';
+      document.getElementById('sortForm').submit();
+    });
+    sortButton_voter.addEventListener('click', function() {
+      document.getElementById('sort').value = 'voter_count';
+      document.getElementById('sortForm').submit();
+    });
+</script>
+{% endblock %}

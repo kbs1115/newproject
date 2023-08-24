@@ -10,10 +10,12 @@ from django.utils.datastructures import MultiValueDict
 
 
 def posts(request, category: int):
-    detail = request.GET.get('detail', 'all')  # all , subject ,content, user, subAndContent
-    kw = request.GET.get('kw', '')
-    sort = request.GET.get('sort', 'update')  # sort 종류는 -create_date, 추천수 2개가 있음
-    page = request.GET.get('page', '1')  # 페이징 처리
+    detail = request.GET.get(
+        "detail", "all"
+    )  # all , subject ,content, user, subAndContent
+    kw = request.GET.get("kw_posts", "")
+    sort = request.GET.get("sort", "update")  # sort 종류는 -create_date, 추천수 2개가 있음
+    page = request.GET.get("page", "1")  # 페이징 처리
 
     if category % 10 == 0:  # question_list , data_board의 전체를 다 가져오고싶을때
         quotient = category // 10
@@ -23,45 +25,51 @@ def posts(request, category: int):
         category = str(category)
         post = Post.objects.filter(category=category)
 
-    if detail == 'all':
+    if detail == "all":
         post = post.filter(
-            Q(subject__icontains=kw) |  # 제목 검색
-            Q(content__icontains=kw) |  # 내용 검색
-            Q(comment__content__icontains=kw) |  # 답변 내용 검색
-            Q(user__nickname__icontains=kw) |  # 질문 글쓴이 검색
-            Q(comment__user__nickname__icontains=kw)  # 답변 글쓴이 검색
+            Q(subject__icontains=kw)
+            | Q(content__icontains=kw)  # 제목 검색
+            | Q(comment__content__icontains=kw)  # 내용 검색
+            | Q(user__nickname__icontains=kw)  # 답변 내용 검색
+            | Q(comment__user__nickname__icontains=kw)  # 질문 글쓴이 검색  # 답변 글쓴이 검색
         ).distinct()
-    elif detail == 'subject':
+    elif detail == "subject":
         post = post.filter(Q(subject__icontains=kw))
-    elif detail == 'content':
+    elif detail == "content":
         post = post.filter(Q(content__icontains=kw))
-    elif detail == 'user':
+    elif detail == "user":
         post = post.filter(Q(user__nickname__icontains=kw))
-    elif detail == 'subAndContent':
+    elif detail == "subAndContent":
         post = post.filter(
-            Q(subject__icontains=kw) |
-            Q(content__icontains=kw)
+            Q(subject__icontains=kw) | Q(content__icontains=kw)
         ).distinct()
 
-    if sort == 'voter_count':
-        post = post.annotate(voter_count=Count('voter')).order_by('-voter_count')
-    elif sort == 'update':
-        post = post.order_by('-create_date')
+    if sort == "voter_count":
+        post = post.annotate(voter_count=Count("voter")).order_by("-voter_count")
+    elif sort == "update":
+        post = post.order_by("-create_date")
 
-    paginator = Paginator(post, 30)  # 페이징처리
+    paginator = Paginator(post, 10)  # 페이징처리
     page_obj = paginator.get_page(page)
 
-    # testcode를 위해 detail과 category를 같이 넘겨주었음. 사실 post,page_obj만 필요함!!! 실질적으로는 page_obj만 필요 !
+    # category 넘기고, 탭메뉴 클릭 시 category 인자를 배열에 넣어서 보내 줌.
     category = int(category)
-    context = {'post': post, 'page_obj': page_obj, 'detail': detail, 'category': category}
-    return render(request, 'board/posts.html', context)
+    quotient = category // 10
+
+    context = {
+        "post": page_obj,
+        "detail": detail,
+        "category": category,
+        "quotient": quotient * 10,
+    }
+    return render(request, "board/posts.html", context)
 
 
 def post_detail(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
     form = CommentForm()
-    context = {'post': post, 'form': form}
-    return render(request, 'board/post_detail.html', context)
+    context = {"post": post, "form": form}
+    return render(request, "board/post_detail.html", context)
 
 
 @login_required(login_url="common:login")
@@ -76,17 +84,17 @@ def post_delete(request, post_id):
 
 @login_required(login_url="common:login")
 def post_create(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = PostForm(request.POST, request.FILES)
         if form.is_valid():
             post = Post()
-            post.category = form.cleaned_data['category']
-            post.subject = form.cleaned_data['subject']
-            post.content = form.cleaned_data['content']
+            post.category = form.cleaned_data["category"]
+            post.subject = form.cleaned_data["subject"]
+            post.content = form.cleaned_data["content"]
             post.user = request.user
             post.create_date = timezone.now()
             post.save()
-            files = request.FILES.getlist('file_field')
+            files = request.FILES.getlist("file_field")
             if files is not None:
                 for f in files:
                     media = Media()
@@ -96,8 +104,8 @@ def post_create(request):
             return redirect("board:post_detail", post_id=post.id)
     else:
         form = PostForm()
-    context = {'form': form}
-    return render(request, 'board/create_post.html', context)
+    context = {"form": form}
+    return render(request, "board/create_post.html", context)
 
 
 @login_required(login_url="common:login")
@@ -107,14 +115,14 @@ def post_modify(request, post_id):
         messages.error(request, "게시글 수정 권한이 없습니다.")
         return redirect("board:post_detail", post_id=post.id)
     images = post.post_media.all()
-    if request.method == 'POST':
+    if request.method == "POST":
         form = PostForm(request.POST, request.FILES, instance=post)
         if form.is_valid():
             images.delete()
             post = form.save(commit=False)
             post.modify_date = timezone.now()
             post.save()  # 기존의 데이터는 modelform을 활용하여 저장한다.
-            files = request.FILES.getlist('file_field')
+            files = request.FILES.getlist("file_field")
             if files is not None:
                 for f in files:
                     media = Media()
@@ -128,17 +136,16 @@ def post_modify(request, post_id):
     for med in post.post_media.all():
         filelist = filelist + [med.file]
     form = PostForm(instance=post)
-    form.fields['file_field'].initial = filelist
-    context = {'form': form}
-    return render(request, 'board/create_post.html', context)
+    form.fields["file_field"].initial = filelist
+    context = {"form": form}
+    return render(request, "board/create_post.html", context)
 
 
 @login_required(login_url="common:login")
 def post_vote(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
     if request.user == post.user:
-        messages.error(request, '본인이 작성한 글은 추천할 수 없습니다.')
+        messages.error(request, "본인이 작성한 글은 추천할 수 없습니다.")
     else:
         post.voter.add(request.user)
-    return redirect('board:post_detail', post_id=post.id)
-
+    return redirect("board:post_detail", post_id=post.id)
