@@ -1,14 +1,9 @@
-from django.contrib.auth.hashers import make_password
-from django.core.files.uploadedfile import SimpleUploadedFile
-from django.shortcuts import resolve_url
 from django.contrib.messages import get_messages
 from django.contrib.auth.hashers import make_password
 from django.test import TestCase, Client
 from django.urls import reverse
-from django.utils.datastructures import MultiValueDict
-
 from .forms import CommentForm
-from .models import Post, Comment, Media
+from .models import Post, Comment, Media, LecturesLink
 from users.models import User
 from django.utils import timezone
 from django.utils.datastructures import MultiValueDict
@@ -234,16 +229,14 @@ class IndexViewTest(TestCase):
         question_math = len(response.context['question_math'])
         question_english = len(response.context['question_english'])
         question_etc = len(response.context['question_etc'])
-        free_board = len(response.context['free_board'])
         best_voter = len(response.context['best_voter'])
 
-        self.assertEqual(notice, 10)
+        self.assertEqual(notice, 5)
         self.assertEqual(question_korean, 5)
         self.assertEqual(question_math, 5)
         self.assertEqual(question_english, 5)
         self.assertEqual(question_etc, 5)
-        self.assertEqual(free_board, 10)
-        self.assertEqual(best_voter, 10)
+        self.assertEqual(best_voter, 5)
 
 
 class PostViewTest(TestCase):
@@ -599,13 +592,13 @@ class VotePostTest(TestCase):
         user2 = User.objects.create(userid='kbs1115', email='bruce11158@naver.com',
                                     password=hashed_password, nickname='BRUCE2')
         p = Post.objects.create(subject='test 1', content='no data', user_id=1, category='20'
-                               ,create_date=timezone.now())
+                                , create_date=timezone.now())
 
     def setUp(self):
         client = Client()
 
     def test_sameUser(self):
-        self.client.login(userid='bruce1115', password='as1df1234') # 글 작성자와 같은 유저가 추천
+        self.client.login(userid='bruce1115', password='as1df1234')  # 글 작성자와 같은 유저가 추천
         response = self.client.get(reverse('board:post_vote', args=[1]))
         messages = list(get_messages(response.wsgi_request))
         self.assertEqual(len(messages), 1)
@@ -615,7 +608,7 @@ class VotePostTest(TestCase):
         self.assertRedirects(response, reverse('board:post_detail', args=[1]), status_code=302)
 
     def test_anotherUser(self):
-        self.client.login(userid='kbs1115', password='as1df1234') # 글 작성자 이외의 유저가 추천
+        self.client.login(userid='kbs1115', password='as1df1234')  # 글 작성자 이외의 유저가 추천
         response = self.client.get(reverse('board:post_vote', args=[1]))
         count = Post.objects.get(pk=1).voter.all().count()
         self.assertEqual(count, 1)
@@ -776,7 +769,6 @@ class CreateCommentTest(TestCase):
         self.assertEqual(len(Comment.objects.filter(parent_comment=None)), 1)
 
 
-
 class CommentModify(TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -877,24 +869,25 @@ class CommentModify(TestCase):
         messages = list(get_messages(response.wsgi_request))
         self.assertEqual(len(messages), 1)
         self.assertEqual(str(messages[0]), '댓글 수정 권한이 없습니다.')
-        
+
+
 class VoteCommentTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         hashed_password = make_password('as1df1234')
         User.objects.create(userid='bruce1115', email='bruce1115@naver.com',
-                                    password=hashed_password, nickname='BRUCE')
+                            password=hashed_password, nickname='BRUCE')
         User.objects.create(userid='kbs1115', email='bruce11158@naver.com',
-                                    password=hashed_password, nickname='BRUCE2')
+                            password=hashed_password, nickname='BRUCE2')
         Post.objects.create(subject='test 1', content='no data', user_id=1, category='20'
-                               ,create_date=timezone.now())
+                            , create_date=timezone.now())
         Comment.objects.create(content='test data', user_id=2, post_id=1, create_date=timezone.now())
 
     def setUp(self):
         client = Client()
 
     def test_sameUser(self):
-        self.client.login(userid='kbs1115', password='as1df1234') # 글 작성자와 같은 유저가 추천
+        self.client.login(userid='kbs1115', password='as1df1234')  # 글 작성자와 같은 유저가 추천
         response = self.client.get(reverse('board:comment_vote', args=[1]))
         messages = list(get_messages(response.wsgi_request))
         self.assertEqual(len(messages), 1)
@@ -904,10 +897,58 @@ class VoteCommentTest(TestCase):
         self.assertRedirects(response, reverse('board:post_detail', args=[comment.post.id]), status_code=302)
 
     def test_anotherUser(self):
-        self.client.login(userid='bruce1115', password='as1df1234') # 글 작성자 이외의 유저가 추천
+        self.client.login(userid='bruce1115', password='as1df1234')  # 글 작성자 이외의 유저가 추천
         response = self.client.get(reverse('board:comment_vote', args=[1]))
         comment = Comment.objects.get(pk=1)
         self.assertEqual(comment.voter.all().count(), 1)
         self.assertRedirects(response, reverse('board:post_detail', args=[comment.post.id]), status_code=302)
-        
 
+
+class LecturesTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        LecturesLink.objects.create(category=1, teacher=1, detail="호주머니문법1",
+                                    url='https://www.google.com/search?q=url&oq=url&aqs=chrome..69i57j0i131i433i512l2j0i433i512j0i131i433i512j69i60j69i61l2.1098j0j7&sourceid=chrome&ie=UTF-8')
+        LecturesLink.objects.create(category=2, teacher=1, detail="최강수학")
+        LecturesLink.objects.create(category=1, teacher=1, detail="호주머니문법2",
+                                    url='https://github.com/kbs1115/newproject/tree/gym/templates/board')
+        LecturesLink.objects.create(category=1, teacher=2, detail="최강국어")
+        LecturesLink.objects.create(category=3, teacher=2, detail="최강영어")
+        LecturesLink.objects.create(category=3, teacher=1, detail="호주머니어법")
+
+    def setUp(self):
+        client = Client()
+
+    def test_CheckDataCreate(self):
+        # db 에 잘 생성되어있는지! 이거는 client에서 넣을 일이 없음
+
+        # category와 teacher_id 로만 서치
+        data1 = LecturesLink.objects.filter(category=1, teacher=1)
+        data2 = LecturesLink.objects.filter(category=1, teacher=2)
+        data3 = LecturesLink.objects.filter(category=2, teacher=1)
+        self.assertEqual(data1.count(), 2)
+        self.assertEqual(data2.count(), 1)
+        self.assertEqual(data3.count(), 1)
+
+        # detail 을 추가해서 서치
+        data4 = LecturesLink.objects.filter(category=1, teacher=1, detail="호주머니문법1")
+        data5 = LecturesLink.objects.filter(category=1, teacher=1, detail="호주머니문법2")
+        self.assertEqual(data4.count(), 1)
+        self.assertEqual(data5.count(), 1)
+
+    def test_IsRightContext(self):
+        response = self.client.get(reverse('board:lectures', args=[3, 1]))
+        cnt = response.context['lectures'].count()
+        self.assertEqual(cnt, 1)
+
+        response = self.client.get(reverse('board:lectures', args=[1, 1]))
+        cnt = response.context['lectures'].count()
+        self.assertEqual(cnt, 2)
+
+        response = self.client.get(reverse('board:lectures', args=[1, 1]))
+        self.assertEqual(response.context['lectures'][1].url,
+                         'https://www.google.com/search?q=url&oq=url&aqs=chrome..69i57j0i131i433i512l2j0i433i512j0i131i433i512j69i60j69i61l2.1098j0j7&sourceid=chrome&ie=UTF-8')
+
+        response = self.client.get(reverse('board:lectures', args=[1, 1]))
+        self.assertEqual(response.context['lectures'][0].url,
+                         'https://github.com/kbs1115/newproject/tree/gym/templates/board')

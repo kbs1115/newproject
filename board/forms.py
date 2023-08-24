@@ -21,6 +21,3 @@ class CommentForm(forms.ModelForm):
         model = Comment
         fields = ['content']
 
-
-class A(forms.Form):
-    file_field = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False)
