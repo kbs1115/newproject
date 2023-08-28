@@ -66,4 +66,4 @@ class LecturesLink(models.Model):
     url = models.URLField()
     category = models.SmallIntegerField()
     teacher = models.SmallIntegerField()  # 영어선생 1, 영어선생2
-    detail = models.TextField(null=True, blank=True)  # 최신순, 인기순
+    detail = models.TextField(null=True, blank=True)  # 강의 종류
