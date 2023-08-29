@@ -1,0 +1,214 @@
+.container {
+    width: 1170px;
+    height: 1542px;
+    overflow: hidden;
+    background: var(--unnamed, #F3F4F8);
+    display: flex;
+    flex-direction: row;
+}
+.sidebar {
+    display: flex;
+    width: 197px;
+    height: 400px;
+    border-radius: 5px;
+    border: 3px solid var(--unnamed, #DFE5EE);
+    background: #FFF;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.sidebar-menu {
+    display: flex;
+    height: 79px;
+    padding-left: 15px;
+    border-bottom: 1px solid var(--unnamed, #DFE5EE);
+    background: #FFF;
+    text-align: start;
+    align-items: center;
+    align-self: stretch;
+    color: var(--unnamed, #393E46);
+    font-family: Noto Sans KR;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    cursor: pointer;
+}
+.sidebar-menu:last-child {
+    border-bottom: none;
+}
+.sidebar-menu:last-child > a > img {
+    margin-left: 10px;
+    width: 26px;
+    height: 26px;
+}
+.sidebar-menu.active {
+    background: var(--unnamed, #4A5BAB);
+}
+.sidebar-menu.active > a {
+    color: white;
+}
+.mainarea {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    width: 923px;
+    height: 1539px;
+    overflow: hidden;
+    margin-left: 56px;
+    border-radius: 5px;
+    background: white;
+    flex-shrink: 0;
+}
+.content {
+    display: flex;
+    width: 854px;
+    flex-direction: column;
+}
+.categoryBox {
+    width: 100%;
+    height: 63px;
+    padding-top: 30px;
+}
+.categoryBox > a {
+    color: var(--unnamed, #A8AAAE);
+    font-family: Noto Sans KR;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+.subjectBox {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 0px;
+    height: 130px;
+    color: var(--unnamed, #393E46);
+    font-family: Noto Sans KR;
+    font-size: 38px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    border-bottom: 1px solid #000;
+}
+.authorBox {
+    display: flex;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+    border-bottom: 1px solid var(--unnamed, #DFE5EE);
+    justify-content: space-between;
+    flex-direction: row;
+    align-items: center;
+}
+.authorInfo {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    width: 420px;
+}
+.nameandDate {
+    display: flex;
+    box-sizing: border-box;
+    width: 349px;
+    padding: 0px 10px;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+}
+.authorName{
+    display: flex;
+    width: 106px;
+    height: 23px;
+    overflow: hidden;
+    flex-shrink: 0;
+    color: var(--unnamed, #393E46);
+    font-family: Noto Sans KR;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    text-overflow: ellipsis;
+}
+.date {
+    height: 23px;
+    overflow: hidden;
+    color: var(--unnamed, #A8AAAE);
+    font-family: Noto Sans KR;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    text-overflow: ellipsis;
+}
+.look {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+.lookNumber {
+    color: var(--unnamed, #A8AAAE);
+    font-family: Noto Sans KR;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+.contentBox {
+    width: 100%;
+    height: 420px;
+}
+.buttonBox {
+    display: flex;
+    box-sizing: border-box;
+    width: 100%;
+    height: 148px;
+    padding: 10px 0px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+.postButton {
+    display: flex;
+    padding: 10px;
+    border-radius: 10px;
+    border: 2px solid var(--unnamed, #DFE5EE);
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    color: var(--unnamed, #4D4E52);
+    font-family: Noto Sans KR;
+    font-size: 25px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    cursor: pointer;
+}
+.fileBox {
+    display: flex;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 2px solid var(--unnamed, #DFE5EE);
+    flex-direction: column;
+    justify-content: center;
+    color: var(--unnamed, #4D4E52);
+    font-family: Noto Sans KR;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+.fileBox > a {
+    margin-top: 4px;
+    color: var(--unnamed, #4D4E52);
+    font-family: Noto Sans KR;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    text-decoration-line: underline;
+}
