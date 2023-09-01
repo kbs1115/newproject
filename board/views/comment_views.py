@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 
-from common.models import Data, Notification
+from common.models import NotificationDetail, Notification
 from ..forms import CommentForm
 from django.contrib import messages
 from ..models import Post, Comment, Media
@@ -22,19 +22,20 @@ def comment_create(request, post_id, parent_comment_id=None):
                 comment.parent_comment = Comment.objects.get(id=parent_comment_id)
             comment.save()
             if parent_comment_id is not None:
-                data = Data.objects.create(sent_user=request.user, comment=comment,
-                                           notice_type="reply_of_comment")
+                data = NotificationDetail.objects.create(sent_user=request.user, comment=comment,
+                                                         notice_type="reply_of_comment")
                 data.save()
                 receiver = Comment.objects.get(id=parent_comment_id).user
                 notification = Notification.objects.create(received_user=receiver, create_date=timezone.now(),
-                                                           data=data)
+                                                           detail=data)
                 notification.save()
             else:
-                data = Data.objects.create(sent_user=request.user, comment=comment, notice_type="comment_of_post")
+                data = NotificationDetail.objects.create(sent_user=request.user, comment=comment,
+                                                         notice_type="comment_of_post")
                 data.save()
                 receiver = Post.objects.get(id=post_id).user
                 notification = Notification.objects.create(received_user=receiver, create_date=timezone.now(),
-                                                           data=data)
+                                                           detail=data)
                 notification.save()
             files = request.FILES.getlist('file_field')
             if files is not None:
@@ -97,8 +98,8 @@ def comment_vote(request, comment_id):
         messages.error(request, '본인이 작성한 댓글은 추천할 수 없습니다.')
     else:
         comment.voter.add(request.user)
-        data = Data.objects.create(sent_user=request.user, comment=comment, notice_type="vote_of_comment")
+        data = NotificationDetail.objects.create(sent_user=request.user, comment=comment, notice_type="vote_of_comment")
         data.save()
-        notification = Notification.objects.create(received_user=comment.user, create_date=timezone.now(), data=data)
+        notification = Notification.objects.create(received_user=comment.user, create_date=timezone.now(), detail=data)
         notification.save()
     return redirect('board:post_detail', post_id=comment.post.id)
