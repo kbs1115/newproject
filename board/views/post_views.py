@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.utils import timezone
 from board.forms import PostForm, CommentForm
 from board.models import Post, Media
-from common.models import Notification, Data
+from common.models import Notification, NotificationDetail
 
 
 def posts(request, category: int):
@@ -149,9 +149,8 @@ def post_vote(request, post_id):
     else:
         post.voter.add(request.user)
 
-        data = Data.objects.create(sent_user=request.user, post=post, notice_type="vote_of_post")
+        data = NotificationDetail.objects.create(sent_user=request.user, post=post, notice_type="vote_of_post")
         data.save()
-        notification = Notification.objects.create(received_user=post.user, create_date=timezone.now(), data=data)
+        notification = Notification.objects.create(received_user=post.user, create_date=timezone.now(), detail=data)
         notification.save()
     return redirect("board:post_detail", post_id=post.id)
-
