@@ -16,8 +16,8 @@ class LogInOutTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         hashed_password = make_password('asdf1234')
-        user1 = User.objects.create(userid='bruce1115', email='bruce1115@naver.com',
-                                    password=hashed_password, nickname='BRUCE')
+        User.objects.create(userid='bruce1115', email='bruce1115@naver.com',
+                            password=hashed_password, nickname='BRUCE')
 
     def setUp(self):
         client = Client()
@@ -215,9 +215,9 @@ class NotificationTest(TestCase):
         self.assertEqual(post.voter.all().count(), 1)
         self.assertEqual(Notification.objects.count(), 1)
         self.assertEqual(notice.received_user, post.user)
-        self.assertEqual(notice.data.post, post)
-        self.assertEqual(notice.data.sent_user, user_bb)
-        self.assertEqual(notice.data.notice_type, "vote_of_post")
+        self.assertEqual(notice.detail.post, post)
+        self.assertEqual(notice.detail.sent_user, user_bb)
+        self.assertEqual(notice.detail.notice_type, "vote_of_post")
 
     def test_Is_data_in_notificationModel_if_comment_vote(self):
         self.client.login(userid="cc", password="as1df1234")
@@ -225,8 +225,8 @@ class NotificationTest(TestCase):
         self.assertEqual(notice_count, 0)
         Comment.objects.create(content='test data', user_id=2, post_id=1, create_date=timezone.now())
         self.client.get(reverse('board:comment_vote', args=[1]))
-        notice = Notification.objects.get(received_user=2, data__sent_user=3, data__comment=1,
-                                          data__notice_type='vote_of_comment')
+        notice = Notification.objects.get(received_user=2, detail__sent_user=3, detail__comment=1,
+                                          detail__notice_type='vote_of_comment')
         self.assertEqual(notice, Notification.objects.get(pk=1))
 
     def test_Is_data_in_notificationModel_if_comment_of_post(self):
@@ -244,17 +244,17 @@ class NotificationTest(TestCase):
         post = Post.objects.get(pk=1)
         comment = Comment.objects.get(pk=1)
         self.assertEqual(notice.received_user, post.user)
-        self.assertEqual(notice.data.sent_user, comment.user)
-        self.assertEqual(notice.data.comment, comment)
-        self.assertEqual(notice.data.notice_type, "comment_of_post")
+        self.assertEqual(notice.detail.sent_user, comment.user)
+        self.assertEqual(notice.detail.comment, comment)
+        self.assertEqual(notice.detail.notice_type, "comment_of_post")
 
     def test_Is_data_in_notificationModel_if_reply_of_comment(self):
         self.client.login(userid="cc", password="as1df1234")
         Comment.objects.create(post_id=1, content="test_comment", create_date=timezone.now(), user_id=2)
         self.client.post(reverse("board:comment_create", args=[1, 1]),
                          {'content': "child_comment"})
-        data = Notification.objects.get(data__sent_user=3, data__comment=2,
-                                        data__notice_type='reply_of_comment')
+        data = Notification.objects.get(detail__sent_user=3, detail__comment=2,
+                                        detail__notice_type='reply_of_comment')
         self.assertEqual(Notification.objects.get(pk=1), data)
 
     def test_Is_voteData_in_notificationModel_if_post_delete(self):
