@@ -17,4 +17,5 @@ class NotificationDetail(models.Model):
 class Notification(models.Model):
     received_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_alert')
     create_date = models.DateTimeField()
-    detail = models.ForeignKey(Detail, on_delete=models.CASCADE, related_name='data_alert')
+    detail = models.ForeignKey(NotificationDetail, on_delete=models.CASCADE, related_name='data_alert')
+
