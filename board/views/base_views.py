@@ -9,7 +9,6 @@ def index(request):
     question_math = Post.objects.filter(category="12").order_by("-create_date")
     question_english = Post.objects.filter(category="13").order_by("-create_date")
     question_etc = Post.objects.filter(category="14").order_by("-create_date")
-    free = Post.objects.filter(category="20").order_by("-create_date")
     best_voter = Post.objects.exclude(category="40")
     best_voter = best_voter.annotate(voter_cnt=Count("voter")).order_by("-voter_cnt")
 
@@ -53,14 +52,11 @@ def nav_search(request):
             )
             .distinct()
         )
-        target_list[i] = target_list[i][:5]
-
-
+        target_list[i] = target_list[i][:5]  # 5개
     context = {
         "free_list": target_list[0],
         "data_list": target_list[1],
         "question_list": target_list[2],
-        "kw": kw,
+        "kw": kw
     }
     return render(request, "board/search_list.html", context)
-
