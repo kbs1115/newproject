@@ -8,9 +8,21 @@
 {% block content %}
 <div class="container">
     <div class="sidebar">
+        {% if post.category == "11" or post.category == "12" or post.category == "13" or post.category == "14" %}
+        <div class="sidebar-menu active"><a href="{% url 'board:posts' 11 %}">질문과 답변</a></div>
+        {% else %}
         <div class="sidebar-menu"><a href="{% url 'board:posts' 11 %}">질문과 답변</a></div>
+        {% endif %}
+        {% if post.category == "31" or post.category == "32" or post.category == "33" or post.category == "34" %}
+        <div class="sidebar-menu active"><a href="{% url 'board:posts' 31 %}">자료게시판</a></div>
+        {% else %}
         <div class="sidebar-menu"><a href="{% url 'board:posts' 31 %}">자료게시판</a></div>
+        {% endif %}
+        {% if post.category == "20" %}
+        <div class="sidebar-menu active"><a href="{% url 'board:posts' 20 %}">자유게시판</a></div>
+        {% else %}
         <div class="sidebar-menu"><a href="{% url 'board:posts' 20 %}">자유게시판</a></div>
+        {% endif %}
         <div class="sidebar-menu"><a>내가 쓴 게시글</a></div>
         <div class="sidebar-menu"><a>글쓰기<img src="/static/img/writeicon.png" alt=""></a></div>
     </div>
@@ -42,7 +54,9 @@
                     <div class="lookNumber">999</div>
                 </div>
             </div>
-            <div class="contentBox">editor 추가 예정</div>
+            <div class="contentBox">
+                <p>{{ post.content|safe }}</p>
+            </div>
             <div class="buttonBox">
                 <button class="postButton">
                     <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26" fill="none">
@@ -64,7 +78,71 @@
                 <a href="">KakaoTalk_20210225_165710511.jpg</a>
                 이 부분은 에디터가 어케 나오느냐에 따라 바뀔수도?
             </div>
-            댓글 부분은 댓글 내용까지 나오면 나중에!
+            <div class="commentStartBox">
+                <div class="commentNum">총 3개의 답변이 있습니다.</div>
+                <a id="toPosts" href="">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="15" viewBox="0 0 18 15" fill="none">
+                        <path d="M0 0V2.15208H18V0H0ZM0 6.39168V8.54376H18V6.39168H0ZM0 12.8479V15H18V12.8479H0Z" fill="#4D4E52"/>
+                    </svg>
+                    목록으로
+                </a>
+            </div>
+            <div class="commentBox">
+                <div class="maincomment">
+                    <div class="commentTitle">
+                        <img src="/static/img/userImage.png" alt="">
+                        <div class="nameandDate_comment">
+                            <a href="" class="authorName_comment">김병수</a>
+                            <div class="date_comment">2020-08-16 16:08:39</div>
+                        </div>
+                        <a class="recommend_comment" href="javascript:void(0);">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="13" viewBox="0 0 12 13" fill="none">
+                                <path d="M7.152 0.504558C6.848 0.538831 6.56 0.761603 6.4 1.08719C6.192 1.53274 4.656 4.84005 4.352 5.16564C4.048 5.49123 3.648 5.64546 3.2 5.64546V12.5H8.8C9.136 12.5 9.424 12.2772 9.552 11.9688C9.552 11.9688 11.2 6.9821 11.2 6.50228C11.2 6.02246 10.848 5.64546 10.4 5.64546H8C7.552 5.64546 7.2 5.21705 7.2 4.78864C7.2 4.36024 7.824 2.0811 7.952 1.63556C8.08 1.19001 7.872 0.710194 7.456 0.555967C7.344 0.521694 7.264 0.487422 7.152 0.504558ZM0 5.64546V12.5H1.6V5.64546H0Z" fill="#4A5BAB"/>
+                            </svg>
+                            5
+                        </a>
+                    </div>
+                    <div class="commentcontent">
+                        대충 답글을 단다는 내용들
+                    </div>
+                </div>
+                <div class="subcomment">
+                    <div class="commentTitle">
+                        <img src="/static/img/userImage.png" alt="">
+                        <div class="nameandDate_comment">
+                            <a href="" class="authorName_comment">김병수</a>
+                            <div class="date_comment">2020-08-16 16:08:39</div>
+                        </div>
+                        <a class="recommend_comment" href="javascript:void(0);">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="13" viewBox="0 0 12 13" fill="none">
+                                <path d="M7.152 0.504558C6.848 0.538831 6.56 0.761603 6.4 1.08719C6.192 1.53274 4.656 4.84005 4.352 5.16564C4.048 5.49123 3.648 5.64546 3.2 5.64546V12.5H8.8C9.136 12.5 9.424 12.2772 9.552 11.9688C9.552 11.9688 11.2 6.9821 11.2 6.50228C11.2 6.02246 10.848 5.64546 10.4 5.64546H8C7.552 5.64546 7.2 5.21705 7.2 4.78864C7.2 4.36024 7.824 2.0811 7.952 1.63556C8.08 1.19001 7.872 0.710194 7.456 0.555967C7.344 0.521694 7.264 0.487422 7.152 0.504558ZM0 5.64546V12.5H1.6V5.64546H0Z" fill="#4A5BAB"/>
+                            </svg>
+                            5
+                        </a>
+                    </div>
+                    <div class="commentcontent">
+                        대충 답글을 단다는 내용들
+                    </div>
+                </div>
+                <div class="subcomment">
+                    <div class="commentTitle">
+                        <img src="/static/img/userImage.png" alt="">
+                        <div class="nameandDate_comment">
+                            <a href="" class="authorName_comment">김병수</a>
+                            <div class="date_comment">2020-08-16 16:08:39</div>
+                        </div>
+                        <a class="recommend_comment" href="javascript:void(0);">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="13" viewBox="0 0 12 13" fill="none">
+                                <path d="M7.152 0.504558C6.848 0.538831 6.56 0.761603 6.4 1.08719C6.192 1.53274 4.656 4.84005 4.352 5.16564C4.048 5.49123 3.648 5.64546 3.2 5.64546V12.5H8.8C9.136 12.5 9.424 12.2772 9.552 11.9688C9.552 11.9688 11.2 6.9821 11.2 6.50228C11.2 6.02246 10.848 5.64546 10.4 5.64546H8C7.552 5.64546 7.2 5.21705 7.2 4.78864C7.2 4.36024 7.824 2.0811 7.952 1.63556C8.08 1.19001 7.872 0.710194 7.456 0.555967C7.344 0.521694 7.264 0.487422 7.152 0.504558ZM0 5.64546V12.5H1.6V5.64546H0Z" fill="#4A5BAB"/>
+                            </svg>
+                            5
+                        </a>
+                    </div>
+                    <div class="commentcontent">
+                        대충 답글을 단다는 내용들
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

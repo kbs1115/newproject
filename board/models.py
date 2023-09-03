@@ -3,6 +3,9 @@ from django.db import models
 # user_id ->user , modify_date추가
 from users.models import User
 
+# ckeditor 추가
+from ckeditor_uploader.fields import RichTextUploadingField
+
 """
 1.1수정) category 필드에 들어가는 데이터종류(단 데이터타입이 String이다):
 또한 category중 일의자리가 0으로 끝나는 데이터는 실제로 존재하지않음. 단순히 views에서 처리하기위함.
@@ -28,12 +31,12 @@ notice_board ->'40'
 
 # 12.4수정) 게시판 종류를 결정하는 카테고리 필드추가
 class Post(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='post')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="post")
     subject = models.CharField(max_length=50)
-    content = models.TextField()
+    content = RichTextUploadingField()
     create_date = models.DateTimeField()
-    category = models.TextField(default='20')
-    voter = models.ManyToManyField(User, related_name='voter_post')
+    category = models.TextField(default="20")
+    voter = models.ManyToManyField(User, related_name="voter_post")
     modify_date = models.DateTimeField(null=True, blank=True)
 
 
@@ -43,11 +46,15 @@ class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     content = models.TextField()
     create_date = models.DateTimeField()
-    voter = models.ManyToManyField(User, related_name='voter_comment')
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comment')
+    voter = models.ManyToManyField(User, related_name="voter_comment")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comment")
     modify_date = models.DateTimeField(null=True, blank=True)
-    parent_comment = models.ForeignKey("self", on_delete=models.CASCADE, related_name='parent_comment_comment',
-                                       null=True)
+    parent_comment = models.ForeignKey(
+        "self",
+        on_delete=models.CASCADE,
+        related_name="parent_comment_comment",
+        null=True,
+    )
 
     def __str__(self):
         return self.content
@@ -55,9 +62,17 @@ class Comment(models.Model):
 
 # 파일테이블 추가 Post테이블을 바라봄
 class Media(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='post_media', blank=True, null=True)
-    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='comment_media', blank=True, null=True)
-    file = models.FileField(upload_to='board/', null=True, blank=True)
+    post = models.ForeignKey(
+        Post, on_delete=models.CASCADE, related_name="post_media", blank=True, null=True
+    )
+    comment = models.ForeignKey(
+        Comment,
+        on_delete=models.CASCADE,
+        related_name="comment_media",
+        blank=True,
+        null=True,
+    )
+    file = models.FileField(upload_to="board/", null=True, blank=True)
 
 
 # 08.17 선생님강의 테이블 추가 ->이 테이블에 해당하는 데이터들은 직접 밀어넣어줘야함

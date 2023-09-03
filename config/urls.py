@@ -21,12 +21,12 @@ from django.urls import path, include
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('board/', include('board.urls')),
-    path('common/', include('common.urls')),
-    path('', base_views.index, name='index'),
-    path('accounts/', include('allauth.urls')),
-
+    path("admin/", admin.site.urls),
+    path("board/", include("board.urls")),
+    path("common/", include("common.urls")),
+    path("", base_views.index, name="index"),
+    path("accounts/", include("allauth.urls")),
+    path("ckeditor/", include("ckeditor_uploader.urls")),
 ]
 
 if settings.DEBUG:

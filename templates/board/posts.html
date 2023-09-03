@@ -86,7 +86,7 @@
             {% for item in post %}
             <tr>
                 <td class="table-number">{{ forloop.counter }}</td>
-                <td class="table-name"><a href="">{{ item.subject }}</a></td>
+                <td class="table-name"><a href="{% url 'board:post_detail' item.id %}">{{ item.subject }}</a></td>
                 <td class="table-author">{{ item.user }}</td>
                 <td class="table-date">{{ item.create_date|date:"Y-m-d" }}</td>
                 <td class="table-recommend">{{ item.user_set.count }}</td>

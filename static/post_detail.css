@@ -158,7 +158,6 @@
 }
 .contentBox {
     width: 100%;
-    height: 420px;
 }
 .buttonBox {
     display: flex;
@@ -211,4 +210,106 @@
     font-weight: 400;
     line-height: normal;
     text-decoration-line: underline;
+}
+.commentStartBox {
+    display: flex;
+    width: 100%;
+    height: 71px;
+    overflow: hidden;
+    padding: 10px 0px 20px 10px;
+    border-bottom: 1px solid #000;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.commentNum {
+    color: var(--, #4D4E52);
+    font-family: Noto Sans KR;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+#toPosts {
+    display: flex;
+    color: var(--, #4D4E52);
+    font-family: Noto Sans KR;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    width: 103px;
+    height: 41px;
+    padding: 5px 8px;
+    border-radius: 5px;
+    border: 1px solid #4D4E52;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    background-color: white;
+}
+.commentBox {
+    display: flex;
+    width: 100%;
+    overflow: hidden;
+    padding: 10px 0px 20px 10px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+}
+.subcomment {
+    padding-left: 32px;
+}
+.commentTitle {
+    display: flex;
+    height: 33px;
+    align-items: flex-start;
+}
+.nameandDate_comment {
+    display: flex;
+    padding: 0px 10px;
+    align-items: center;
+    gap: 10px;
+}
+.authorName_comment {
+    overflow: hidden;
+    color: var(--, #393E46);
+    font-family: Noto Sans KR;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    text-overflow: ellipsis;
+}
+.date_comment {
+    color: var(--unnamed, #A8AAAE);
+    font-family: Noto Sans KR;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    text-overflow: ellipsis;
+}
+.recommend_comment {
+    display: flex;
+    height: 20px;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 5px;
+    align-items: center;
+    color: var(--, #4D4E52);
+    font-family: Noto Sans KR;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+.commentcontent {
+    padding-left: 32px;
+    color: #000;
+    font-family: Noto Sans KR;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;
 }
