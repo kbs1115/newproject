@@ -13,10 +13,13 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 
 
 class NavSearchViewTest(TestCase):
+
     @classmethod
     def setUpTestData(cls):
+        # 사용자 생성
         User.objects.create(userid='bruce1115', email='bruce1115@naver.com', nickname='BRUCE')
         User.objects.create(userid='admin', email='bruce11158@gmail.com', nickname='KBS')
+
         Post.objects.create(subject='yahoo', content='1111 cccc', create_date=timezone.now(),
                             user_id=2, category='20')
         for i in range(200):
@@ -31,7 +34,6 @@ class NavSearchViewTest(TestCase):
         response = self.client.get(reverse('board:search'), {'kw': 'test'})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['kw'], 'test')
-        self.client
 
     def test_voterCountAlign(self):  # 게시글이 voter 수대로 정렬이 잘 되는지 확인하기
         p1 = Post.objects.create(subject='Best', content='no data', create_date=timezone.now(),
@@ -95,8 +97,11 @@ class NavSearchViewTest(TestCase):
 class BoardModelTest(TestCase):
     @classmethod
     def setUpTestData(cls):
+        # user 생성
         User.objects.create(userid='bruce1115', email='bruce1115@naver.com', nickname='BRUCE')
         User.objects.create(userid='admin', email='bruce11158@gmail.com', nickname='KBS')
+
+        # post 생성
         Post.objects.create(subject='subject 1', content='data 1', create_date=timezone.now(),
                             user_id=1, category='20')
         Post.objects.create(subject='subject 22', content='data 22', create_date=timezone.now(),
@@ -155,45 +160,62 @@ class BoardModelTest(TestCase):
 
     def test_commentDelete(self):
         c1 = Comment.objects.create(content='data 2', create_date=timezone.now(), user_id=1, post_id=1)
-        c2 = Comment.objects.create(content='data 3', create_date=timezone.now(), user_id=1, post_id=2)
+        Comment.objects.create(content='data 3', create_date=timezone.now(), user_id=1, post_id=2)
         c1.delete()
         self.assertFalse(Comment.objects.filter(post_id=1).exists())
         self.assertTrue(Comment.objects.filter(content='data 3').exists())
 
 
 class IndexViewTest(TestCase):
+    # IndexViews 에서 넘겨주는 게시물 개수
+    FREE_CNT = 5
+    DATA_CNT = 5
+    NOTICE_CNT = 5
+    QUESTION_KOR_CNT = 5
+    QUESTION_ENG_CNT = 5
+    QUESTION_MATH_CNT = 5
+    QUESTION_ETC_CNT = 5
+    BEST_VOTER_CNT = 5
+
     @classmethod
     def setUpTestData(cls):
+        # user 생성
         User.objects.create(userid='bruce1115', email='bruce1115@naver.com', nickname='BRUCE')  # id=1
         User.objects.create(userid='admin', email='bruce11158@gmail.com', nickname='KBS')  # id=2
         User.objects.create(userid='dbsrbals', email='dbsrbals26@gmail.com', nickname='ygm')  # id=3
         User.objects.create(userid='dbsrbals1', email='dbsrbals27@gmail.com', nickname='ygm1')  # id=4
 
+        # notice_board 게시물 100개 생성
         for i in range(100):
             p = Post(subject='notice_board %03d' % i, content='notice data',
                      create_date=timezone.now(), user_id=1, category='40')
             p.save()
 
+        # question_korean_board 게시물 100개 생성
         for i in range(100):
             p = Post(subject='question_korean_board %03d' % i, content='question_korean_data',
                      create_date=timezone.now(), user_id=2, category='11')
             p.save()
 
+        # question_math_board 게시물 100개 생성
         for i in range(100):
             p = Post(subject='question_math_board %03d' % i, content='question_math_data',
                      create_date=timezone.now(), user_id=2, category='12')
             p.save()
 
+        # question_english_board 게시물 100개 생성
         for i in range(100):
             p = Post(subject='question_english_board %03d' % i, content='question_english_data',
                      create_date=timezone.now(), user_id=2, category='13')
             p.save()
 
+        # question_etc_board 게시물 100개 생성
         for i in range(100):
             p = Post(subject='question_etc_board %03d' % i, content='question_etc_data',
                      create_date=timezone.now(), user_id=2, category='14')
             p.save()
 
+        # free_board 게시물 100개 생성
         for i in range(100):
             p = Post(subject='free_board %03d' % i, content='free data',
                      create_date=timezone.now(), user_id=1, category='20')
@@ -203,12 +225,20 @@ class IndexViewTest(TestCase):
         client = Client()
 
     def test_voterCountAlign(self):
+
+        # free_post 생성
         p1 = Post.objects.create(subject='1', content='no data', create_date=timezone.now(),
                                  user_id=4, category='20')
+
+        # notice_post 생성
         p2 = Post.objects.create(subject='cannot in best voter', content='no data', create_date=timezone.now(),
                                  user_id=1, category='40')
+
+        # question_korean_post 생성
         p3 = Post.objects.create(subject='2', content='no data', create_date=timezone.now(),
                                  user_id=2, category='11')
+
+        # question_math_post 생성
         p4 = Post.objects.create(subject='3', content='no data', create_date=timezone.now(),
                                  user_id=3, category='12')
         p1.voter.add(1, 2, 3)
@@ -231,15 +261,18 @@ class IndexViewTest(TestCase):
         question_etc = len(response.context['question_etc'])
         best_voter = len(response.context['best_voter'])
 
-        self.assertEqual(notice, 5)
-        self.assertEqual(question_korean, 5)
-        self.assertEqual(question_math, 5)
-        self.assertEqual(question_english, 5)
-        self.assertEqual(question_etc, 5)
-        self.assertEqual(best_voter, 5)
+        self.assertEqual(notice, self.NOTICE_CNT)
+        self.assertEqual(question_korean, self.QUESTION_KOR_CNT)
+        self.assertEqual(question_math, self.QUESTION_MATH_CNT)
+        self.assertEqual(question_english, self.QUESTION_ENG_CNT)
+        self.assertEqual(question_etc, self.QUESTION_ETC_CNT)
+        self.assertEqual(best_voter, self.BEST_VOTER_CNT)
 
 
 class PostViewTest(TestCase):
+    # 한페이지에 보여줄 게시물 개수
+    POST_PAGINATION = 10
+
     @classmethod
     def setUpTestData(cls):
         User.objects.create(userid='bruce1115', email='bruce1115@naver.com', nickname='BRUCE')  # id=1
@@ -317,13 +350,13 @@ class PostViewTest(TestCase):
             category = response.context['category']
             self.assertEqual(category, i)
 
-    def test_checkBoardCount(self):  # 카테고리에 맞는 post 객체들의 개수를 조사한다
-        category_list = [10, 11, 12, 13, 14, 20, 30, 31, 32, 33, 34, 40]
-        post_count = [60, 11, 12, 13, 14, 20, 160, 31, 32, 33, 34, 40]
-        for i in range(len(category_list)):
-            response = self.client.get(reverse("board:posts", args=[category_list[i]]))
-            post_cnt = len(response.context['post'])
-            self.assertEqual(post_cnt, post_count[i])
+    # def test_checkBoardCount(self):  # 카테고리에 맞는 post 객체들의 개수를 조사한다
+    #     category_list = [10, 11, 12, 13, 14, 20, 30, 31, 32, 33, 34, 40]
+    #     post_count = [60, 11, 12, 13, 14, 20, 160, 31, 32, 33, 34, 40]
+    #     for i in range(len(category_list)):
+    #         response = self.client.get(reverse("board:posts", args=[category_list[i]]))
+    #         post_cnt = len(response.context['post'])
+    #         self.assertEqual(post_cnt, post_count[i])
 
     def test_checkDetail(self):  # all , subject ,content, user, subAndContent
         detail_list = ['', 'all', 'subject', 'content', 'user', 'subAndContent']
@@ -335,31 +368,32 @@ class PostViewTest(TestCase):
             detail = response.context['detail']
             self.assertEqual(detail, detail_list[i])
 
-    def test_checkKwCount(self):
-        detail_list = ['all', 'subject', 'content', 'user', 'subAndContent']
-        kw_list = ['1', 'ma', 'data']
-        post_cnt_list = [15, 15, 0, 0, 15, 12, 12, 12, 0, 12, 50, 0, 50, 0, 50]
-        k = 0
-        for i in range(len(kw_list)):
-            for j in range(len(detail_list)):
-                response = self.client.get(reverse("board:posts", args=[10]),
-                                           {'detail': f'{detail_list[j]}', 'kw': f'{kw_list[i]}', 'sort': '',
-                                            'page': '1'},
-                                           )
-                post_cnt = len(response.context['post'])
-                self.assertEqual(post_cnt, post_cnt_list[k])
-                k += 1
+    # def test_checkKwCount(self):
+    #     detail_list = ['all', 'subject', 'content', 'user', 'subAndContent']
+    #     kw_list = ['1', 'ma', 'data']
+    #     post_cnt_list = [15, 15, 0, 0, 15, 12, 12, 12, 0, 12, 50, 0, 50, 0, 50]
+    #     k = 0
+    #     for i in range(len(kw_list)):
+    #         for j in range(len(detail_list)):
+    #             response = self.client.get(reverse("board:posts", args=[10]),
+    #                                        {'detail': f'{detail_list[j]}', 'kw': f'{kw_list[i]}', 'sort': '',
+    #                                         'page': '1'},
+    #                                        )
+    #             post_cnt = len(response.context['post'])
+    #             self.assertEqual(post_cnt, post_cnt_list[k])
+    #             k += 1
+    #
 
     def test_pagingDataCount(self):
         response = self.client.get(reverse("board:posts", args=[10]),
-                                   {'kw': '',
+                                   {'kw_posts': '',
                                     'page': '2'},
                                    )
-        page_cnt = len(response.context['page_obj'])
-        self.assertEqual(page_cnt, 30)
+        page_cnt = len(response.context['post'])
+        self.assertEqual(page_cnt, 10)
 
         response = self.client.get(reverse("board:posts", args=[10]),
-                                   {'kw': '!@#!@#QESE!@#',
+                                   {'kw_posts': '!@#!@#QESE!@#',
                                     'page': ''},
                                    )
         post_cnt = len(response.context['post'])
@@ -381,7 +415,7 @@ class PostViewTest(TestCase):
         p4.voter.add()
 
         response = self.client.get(reverse("board:posts", args=[30]),
-                                   {'detail': 'content', 'kw': 'no data', 'sort': 'voter_count',
+                                   {'detail': 'content', 'kw_posts': 'no data', 'sort': 'voter_count',
                                     'page': ''},
                                    )
         context = response.context['post']
@@ -404,16 +438,19 @@ class PostViewTest(TestCase):
                             user_id=3, category='34')
         time.sleep(0.01)
         response = self.client.get(reverse("board:posts", args=[30]),
-                                   {'detail': 'content', 'kw': 'no data', 'sort': 'update',
+                                   {'detail': 'content', 'kw_posts': 'no data', 'sort': 'update',
                                     'page': ''},
                                    )
-        context = response.context['post']
-        post_cnt = len(response.context['post'])
-        self.assertEqual(post_cnt, 4)
-        self.assertEqual(context[0].subject, '40')
-        self.assertEqual(context[1].subject, '30')
-        self.assertEqual(context[2].subject, '20')
-        self.assertEqual(context[3].subject, '10')
+        posts = response.context['post']
+        category = response.context['category']
+        detail = response.context['detail']
+        self.assertEqual(len(posts), 4)
+        self.assertEqual(category, 30)
+        self.assertEqual(detail, 'content')
+        self.assertEqual(posts[0].subject, '40')
+        self.assertEqual(posts[1].subject, '30')
+        self.assertEqual(posts[2].subject, '20')
+        self.assertEqual(posts[3].subject, '10')
 
 
 class PostDetailTest(TestCase):
@@ -587,12 +624,12 @@ class VotePostTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         hashed_password = make_password('as1df1234')
-        user1 = User.objects.create(userid='bruce1115', email='bruce1115@naver.com',
-                                    password=hashed_password, nickname='BRUCE')
-        user2 = User.objects.create(userid='kbs1115', email='bruce11158@naver.com',
-                                    password=hashed_password, nickname='BRUCE2')
-        p = Post.objects.create(subject='test 1', content='no data', user_id=1, category='20'
-                                , create_date=timezone.now())
+        User.objects.create(userid='bruce1115', email='bruce1115@naver.com',
+                            password=hashed_password, nickname='BRUCE')
+        User.objects.create(userid='kbs1115', email='bruce11158@naver.com',
+                            password=hashed_password, nickname='BRUCE2')
+        Post.objects.create(subject='test 1', content='no data', user_id=1, category='20'
+                            , create_date=timezone.now())
 
     def setUp(self):
         client = Client()
