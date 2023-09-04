@@ -51,12 +51,12 @@ def posts(request, category: int):
 
     paginator = Paginator(post, 10)  # 페이징처리
     page_obj = paginator.get_page(page)
-
     # category 넘기고, 탭메뉴 클릭 시 category 인자를 배열에 넣어서 보내 줌.
     category = int(category)
     quotient = category // 10
 
     context = {
+
         "post": page_obj,
         "detail": detail,
         "category": category,

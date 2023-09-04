@@ -18,13 +18,14 @@ class UserManager(BaseUserManager):
         if not nickname:
             raise ValueError('Nickname을 입력해주세요.')
         email = self.normalize_email(email)
-        userid = self.model.normalize_username(userid)
-        nickname = self.model.normalize_username(nickname)
+        userid = self.model.normalize_username(userid)  # 모두 소문자로 만들어서 정규화 해주는거
+        nickname = self.model.normalize_username(nickname)  # 자음모음 안깨지게 정규화 해주는거
         user = self.model(userid=userid, email=email, nickname=nickname, **extra_fields)
         user.set_password(password)
-        user.save(using=self.db)
+        user.save(using=self.db)  # 기존 장고 세팅에 되어있는 db로 저장할것인가
         return user
 
+    # 이게 우선적으로 실행된후에 _create_user 을 호출함
     def create_user(self, userid, nickname, email, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', False)
         extra_fields.setdefault('is_superuser', False)

@@ -4,15 +4,18 @@ from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from django.utils.translation import gettext_lazy as _
 from .models import User
 
+
 class MyUserChangeForm(UserChangeForm):
     class Meta:
         model = User
         fields = '__all__'
 
+
 class MyUserCreationForm(UserCreationForm):
     class Meta:
         model = User
         fields = ('email', 'userid', 'nickname')
+
 
 class MyUserAdmin(UserAdmin):
     fieldsets = (
@@ -33,5 +36,6 @@ class MyUserAdmin(UserAdmin):
     list_filter = ('is_staff', 'is_superuser', 'is_active', 'groups')
     search_fields = ('email', 'userid', 'nickname')
     ordering = ('email', 'date_joined')
+
 
 admin.site.register(User, MyUserAdmin)
