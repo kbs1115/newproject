@@ -55,12 +55,17 @@ def posts(request, category: int):
     category = int(category)
     quotient = category // 10
 
+    # 공지사항 페이지에서 staff가 아니면 애초에 글쓰기 버튼을 없애버리기.
+    is_staff = False
+    if request.user.is_staff:
+        is_staff = True
     context = {
-
+        "is_staff": is_staff,
         "post": page_obj,
         "detail": detail,
         "category": category,
         "quotient": quotient * 10,
+
     }
     return render(request, "board/posts.html", context)
 
@@ -104,7 +109,10 @@ def post_create(request):
             return redirect("board:post_detail", post_id=post.id)
     else:
         form = PostForm()
-    context = {"form": form}
+    is_staff = False
+    if request.user.is_staff:
+        is_staff = True
+    context = {"form": form, 'is_staff': is_staff}
     return render(request, "board/create_post.html", context)
 
 
