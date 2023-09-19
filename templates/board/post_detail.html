@@ -32,19 +32,34 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="17" viewBox="0 0 18 17" fill="none">
                     <path d="M9 0.625L0 7.375H2.25V16.375H6.75V11.875H11.25V16.375H15.75V7.3075L18 7.375L9 0.625Z" fill="#A8AAAE"/>
                 </svg>
+                {% if post.category == "11" or post.category == "12" or post.category == "13" or post.category == "14" %}
                 <a href="">질문과 답변</a>&nbsp;-
+                {% elif post.category == "20" %}
+                <a href="">자유게시판</a>&nbsp;
+                {% elif post.category == "31" or post.category == "32" or post.category == "33" or post.category == "34" %}
+                <a href="">자료게시판</a>&nbsp;-
+                {% elif post.category == "40" %}
+                <a href="">공지사항</a>&nbsp;2020-08-16
+                {% endif %}
+                {% if post.category == "11" or post.category == "31" %}
                 <a href="">국어</a>
+                {% elif post.category == "12" or post.category == "32" %}
+                <a href="">수학</a>
+                {% elif post.category == "13" or post.category == "33" %}
+                <a href="">영어</a>
+                {% elif post.category == "14" or post.category == "34" %}
+                <a href="">탐구</a>
+                {% endif %}
             </div>
             <div class="subjectBox">
-                질문 예시를 들어보겠습니다! 어쩌고저쩌고저쩌고
-                악악악악악악악악악악
+                {{ post.subject }}
             </div>
             <div class="authorBox">
                 <div class="authorInfo">
                     <img src="/static/img/userImage.png" alt="">
                     <div class="nameandDate">
-                        <a href="" class="authorName">김병수</a>
-                        <div class="date">2020-08-16 16:08:39</div>
+                        <a href="" class="authorName">{{ post.user }}</a>
+                        <div class="date">{{ post.create_date|date:"Y-m-d H:i:s" }}</div>
                     </div>
                 </div>
                 <div class="look">
@@ -58,12 +73,21 @@
                 <p>{{ post.content|safe }}</p>
             </div>
             <div class="buttonBox">
+                {% if isVoted %}
+                <button class="postButton voted">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26" fill="#4A5BAB">
+                        <path opacity="1" d="M16.6029 0.00987574C15.8971 0.0841332 15.2286 0.566807 14.8571 1.27225C14.3743 2.2376 10.8086 9.40345 10.1029 10.1089C9.39714 10.8143 8.46857 11.1485 7.42857 11.1485V26H20.4286C21.2086 26 21.8771 25.5173 22.1743 24.849C22.1743 24.849 26 14.0445 26 13.0049C26 11.9653 25.1829 11.1485 24.1429 11.1485H18.5714C17.5314 11.1485 16.7143 10.2203 16.7143 9.29206C16.7143 8.36384 18.1629 3.42572 18.46 2.46037C18.7571 1.49503 18.2743 0.455421 17.3086 0.121262C17.0486 0.0470045 16.8629 -0.027253 16.6029 0.00987574ZM0 11.1485V26H3.71429V11.1485H0Z" fill="#4A5BAB"/>
+                    </svg>
+                    추천 {{ post.voter.count }}
+                </button>
+                {% else %}
                 <button class="postButton">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26" fill="none">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26" fill="#4D4E52">
                         <path opacity="0.3" d="M16.6029 0.00987574C15.8971 0.0841332 15.2286 0.566807 14.8571 1.27225C14.3743 2.2376 10.8086 9.40345 10.1029 10.1089C9.39714 10.8143 8.46857 11.1485 7.42857 11.1485V26H20.4286C21.2086 26 21.8771 25.5173 22.1743 24.849C22.1743 24.849 26 14.0445 26 13.0049C26 11.9653 25.1829 11.1485 24.1429 11.1485H18.5714C17.5314 11.1485 16.7143 10.2203 16.7143 9.29206C16.7143 8.36384 18.1629 3.42572 18.46 2.46037C18.7571 1.49503 18.2743 0.455421 17.3086 0.121262C17.0486 0.0470045 16.8629 -0.027253 16.6029 0.00987574ZM0 11.1485V26H3.71429V11.1485H0Z" fill="#4D4E52"/>
                     </svg>
-                    2000
+                    추천 {{ post.voter.count }}
                 </button>
+                {% endif %}
                 <button class="postButton">
                     <svg xmlns="http://www.w3.org/2000/svg" width="23" height="26" viewBox="0 0 23 26" fill="none">
                         <g opacity="0.3">
@@ -75,11 +99,15 @@
             </div>
             <div class="fileBox">
                 원본 첨부파일
-                <a href="">KakaoTalk_20210225_165710511.jpg</a>
-                이 부분은 에디터가 어케 나오느냐에 따라 바뀔수도?
             </div>
+            {% if isAuthor %}
+            <div class="modifyDeleteBox">
+                <button class="modifyDeleteButton">수정하기</button>
+                <button class="modifyDeleteButton">삭제하기</button>
+            </div>
+            {% endif %}
             <div class="commentStartBox">
-                <div class="commentNum">총 3개의 답변이 있습니다.</div>
+                <div class="commentNum">총 {{ post.comment.count }}개의 답변이 있습니다.</div>
                 <a id="toPosts" href="">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="15" viewBox="0 0 18 15" fill="none">
                         <path d="M0 0V2.15208H18V0H0ZM0 6.39168V8.54376H18V6.39168H0ZM0 12.8479V15H18V12.8479H0Z" fill="#4D4E52"/>
@@ -87,65 +115,106 @@
                     목록으로
                 </a>
             </div>
+            <div class="commentWriteBox">
+                <img src="/static/img/userImage.png" alt="">
+                <form action="{% url 'board:comment_create' post.id %}" class="commentForm" method="post">
+                    {% csrf_token %}
+                    {{ commentForm.media }}
+                    {{ commentForm.content }}
+                    <button type="submit">작성</button>
+                </form>
+            </div>
+            {% for comment in post.comment.all %}
+            {% if not comment.parent_comment %}
             <div class="commentBox">
                 <div class="maincomment">
                     <div class="commentTitle">
                         <img src="/static/img/userImage.png" alt="">
                         <div class="nameandDate_comment">
-                            <a href="" class="authorName_comment">김병수</a>
-                            <div class="date_comment">2020-08-16 16:08:39</div>
+                            <a href="" class="authorName_comment">{{comment.user}}</a>
+                            <div class="date_comment">{{ comment.create_date|date:"Y-m-d H:i:s" }}</div>
                         </div>
                         <a class="recommend_comment" href="javascript:void(0);">
                             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="13" viewBox="0 0 12 13" fill="none">
                                 <path d="M7.152 0.504558C6.848 0.538831 6.56 0.761603 6.4 1.08719C6.192 1.53274 4.656 4.84005 4.352 5.16564C4.048 5.49123 3.648 5.64546 3.2 5.64546V12.5H8.8C9.136 12.5 9.424 12.2772 9.552 11.9688C9.552 11.9688 11.2 6.9821 11.2 6.50228C11.2 6.02246 10.848 5.64546 10.4 5.64546H8C7.552 5.64546 7.2 5.21705 7.2 4.78864C7.2 4.36024 7.824 2.0811 7.952 1.63556C8.08 1.19001 7.872 0.710194 7.456 0.555967C7.344 0.521694 7.264 0.487422 7.152 0.504558ZM0 5.64546V12.5H1.6V5.64546H0Z" fill="#4A5BAB"/>
                             </svg>
-                            5
+                            {{comment.voter.count}}
                         </a>
+                        {% if user.is_authenticated %}
+                        <a href="javascript:void(0);" class="comment_link replyFormLink">답글</a>
+                        {% endif %}
+                        {% if user == comment.user %}
+                        <a href="" class="comment_link">수정</a>
+                        <a href="" class="comment_link">삭제</a>
+                        {% endif %}
                     </div>
                     <div class="commentcontent">
-                        대충 답글을 단다는 내용들
+                        {{ comment.content|safe }}
                     </div>
+                    <form class="commentForm Reply hidden" method="post" style="margin-left: 32px; margin-top: 20px;">
+                        {% csrf_token %}
+                        {{ commentForm.media }}
+                        {{ commentForm.content }}
+                        <button type="submit">작성</button>
+                    </form>
                 </div>
+                {% for reply in comment.child.all %}
                 <div class="subcomment">
                     <div class="commentTitle">
                         <img src="/static/img/userImage.png" alt="">
                         <div class="nameandDate_comment">
-                            <a href="" class="authorName_comment">김병수</a>
-                            <div class="date_comment">2020-08-16 16:08:39</div>
+                            <a href="" class="authorName_comment">{{reply.user}}</a>
+                            <div class="date_comment">{{ reply.create_date|date:"Y-m-d H:i:s" }}</div>
                         </div>
                         <a class="recommend_comment" href="javascript:void(0);">
                             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="13" viewBox="0 0 12 13" fill="none">
                                 <path d="M7.152 0.504558C6.848 0.538831 6.56 0.761603 6.4 1.08719C6.192 1.53274 4.656 4.84005 4.352 5.16564C4.048 5.49123 3.648 5.64546 3.2 5.64546V12.5H8.8C9.136 12.5 9.424 12.2772 9.552 11.9688C9.552 11.9688 11.2 6.9821 11.2 6.50228C11.2 6.02246 10.848 5.64546 10.4 5.64546H8C7.552 5.64546 7.2 5.21705 7.2 4.78864C7.2 4.36024 7.824 2.0811 7.952 1.63556C8.08 1.19001 7.872 0.710194 7.456 0.555967C7.344 0.521694 7.264 0.487422 7.152 0.504558ZM0 5.64546V12.5H1.6V5.64546H0Z" fill="#4A5BAB"/>
                             </svg>
-                            5
+                            {{reply.voter.count}}
                         </a>
+                        {% if user.is_authenticated %}
+                        <a href="javascript:void(0);" class="comment_link replyFormLink">답글</a>
+                        {% endif %}
+                        {% if user == reply.user %}
+                        <a href="" class="comment_link">수정</a>
+                        <a href="" class="comment_link">삭제</a>
+                        {% endif %}
                     </div>
                     <div class="commentcontent">
-                        대충 답글을 단다는 내용들
+                        {{ reply.content|safe }}
                     </div>
+                    <form class="commentForm Reply hidden" method="post" style="margin-left: 32px; margin-top: 20px;">
+                        {% csrf_token %}
+                        {{ commentForm.media }}
+                        {{ commentForm.content }}
+                        <button type="submit">작성</button>
+                    </form>
                 </div>
-                <div class="subcomment">
-                    <div class="commentTitle">
-                        <img src="/static/img/userImage.png" alt="">
-                        <div class="nameandDate_comment">
-                            <a href="" class="authorName_comment">김병수</a>
-                            <div class="date_comment">2020-08-16 16:08:39</div>
-                        </div>
-                        <a class="recommend_comment" href="javascript:void(0);">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="13" viewBox="0 0 12 13" fill="none">
-                                <path d="M7.152 0.504558C6.848 0.538831 6.56 0.761603 6.4 1.08719C6.192 1.53274 4.656 4.84005 4.352 5.16564C4.048 5.49123 3.648 5.64546 3.2 5.64546V12.5H8.8C9.136 12.5 9.424 12.2772 9.552 11.9688C9.552 11.9688 11.2 6.9821 11.2 6.50228C11.2 6.02246 10.848 5.64546 10.4 5.64546H8C7.552 5.64546 7.2 5.21705 7.2 4.78864C7.2 4.36024 7.824 2.0811 7.952 1.63556C8.08 1.19001 7.872 0.710194 7.456 0.555967C7.344 0.521694 7.264 0.487422 7.152 0.504558ZM0 5.64546V12.5H1.6V5.64546H0Z" fill="#4A5BAB"/>
-                            </svg>
-                            5
-                        </a>
-                    </div>
-                    <div class="commentcontent">
-                        대충 답글을 단다는 내용들
-                    </div>
-                </div>
+                {% endfor %}
             </div>
+            {% endif %}
+            {% endfor %}
         </div>
     </div>
 </div>
 <script>
+    var textarea = document.querySelectorAll('.commentForm > textarea');
+
+    textarea[0].addEventListener('input',() => {
+        textarea[0].style.height = 'auto';
+        textarea[0].style.height = textarea[0].scrollHeight + 'px';
+    })
+</script>
+<!-- hidden form 설정 -->
+<script>
+    const toggleLinks = document.querySelectorAll(".replyFormLink");
+    const toggleForms = document.querySelectorAll(".Reply");
+
+    toggleLinks.forEach((link, index) => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            toggleForms[index].classList.toggle('hidden');
+        });
+    });
 </script>
 {% endblock %}

@@ -43,21 +43,15 @@ class Post(models.Model):
 # user_id ->user, voter_id -> voter, post_id->post , modify_date 추가
 # parent_comment는 대댓글여부를 판단하는 필드이다. 부모댓글이 없는경우 대댓글이 아닌걸로 판단한다.
 class Comment(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
-    content = models.TextField()
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comment")
+    content = RichTextUploadingField()
     create_date = models.DateTimeField()
-    voter = models.ManyToManyField(User, related_name="voter_comment")
+    voter = models.ManyToManyField(User, related_name="voted_comment")
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comment")
     modify_date = models.DateTimeField(null=True, blank=True)
     parent_comment = models.ForeignKey(
-        "self",
-        on_delete=models.CASCADE,
-        related_name="parent_comment_comment",
-        null=True,
+        "self", on_delete=models.CASCADE, related_name="child", null=True, blank=True
     )
-
-    def __str__(self):
-        return self.content
 
 
 # 파일테이블 추가 Post테이블을 바라봄

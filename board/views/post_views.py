@@ -68,7 +68,22 @@ def posts(request, category: int):
 def post_detail(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
     form = CommentForm()
-    context = {"post": post, "form": form}
+
+    voted = False
+    isAuthor = False
+
+    if request.user.is_authenticated:
+        if request.user == post.user:
+            isAuthor = True
+        if post.voter.filter(id=request.user.id).exists():
+            voted = True
+
+    context = {
+        "post": post,
+        "commentForm": form,
+        "isVoted": voted,
+        "isAuthor": isAuthor,
+    }
     return render(request, "board/post_detail.html", context)
 
 
@@ -149,9 +164,12 @@ def post_vote(request, post_id):
     else:
         post.voter.add(request.user)
 
-        data = Data.objects.create(sent_user=request.user, post=post, notice_type="vote_of_post")
+        data = Data.objects.create(
+            sent_user=request.user, post=post, notice_type="vote_of_post"
+        )
         data.save()
-        notification = Notification.objects.create(received_user=post.user, create_date=timezone.now(), data=data)
+        notification = Notification.objects.create(
+            received_user=post.user, create_date=timezone.now(), data=data
+        )
         notification.save()
     return redirect("board:post_detail", post_id=post.id)
-

@@ -153,3 +153,9 @@ LOGOUT_REDIRECT_URL = "/"
 
 CKEDITOR_UPLOAD_PATH = "uploads/"
 CKEDITOR_IMAGE_BACKEND = "pillow"
+
+CKEDITOR_CONFIGS = {
+    "default": {
+        "width": 800,  # 이 부분 추가
+    },
+}
